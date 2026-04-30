@@ -74,53 +74,35 @@
   </div>
 </div>
 
-<h2>Politeness check</h2>
-<p style="font-size:14px;color:#888;">If a userscript or Chrome extension is also installed, it should detect this page's embed and defer. Status:</p>
-<pre style="background:#1a1a2e;padding:12px;border-radius:8px;font-size:13px;color:#aaa;" id="status">(checking...)</pre>
+<pre id="error" style="display:none;background:#1a1a2e;padding:12px;border-radius:8px;font-size:13px;color:#f87171;"></pre>
 
 <!-- Embed the bilang-slidekeys component -->
 <bilingual-keyboard active-lang="uk" input-mode="bound" enabled-latin-langs="en"></bilingual-keyboard>
 
 <script type="module">
-  const status = document.getElementById('status');
+  const errBox = document.getElementById('error');
 
-  // Loud warning if the page was opened via file:// — relative ES module
-  // imports require an http(s) origin in most browsers.
+  // The page must be served over http(s) — relative ES module imports
+  // don't work via file://. If that's the case, surface a clear message
+  // instead of failing silently.
   if (location.protocol === 'file:') {
-    status.style.color = '#f87171';
-    status.textContent =
-      'ERROR: this page was opened via file:// which blocks ES module imports.\n' +
-      'Serve it via a local HTTP server instead, e.g.\n' +
-      '  python3 -m http.server 8801 --directory /path/to/bilingual-keyboard\n' +
-      'then open http://localhost:8801/website/example/index.html';
+    errBox.style.display = 'block';
+    errBox.textContent =
+      'This page must be served via a local HTTP server (file:// blocks ES module imports).\n' +
+      'Run: python3 -m http.server 8801 --directory /path/to/bilingual-keyboard\n' +
+      'Then open http://localhost:8801/website/example/index.html';
   } else {
     try {
-      // Path: copy bilingual-keyboard.js + layouts.js to your site, or
-      // load from a CDN once published. Here we go up two levels into
-      // the project's src/ directory for the live demo.
+      // Copy bilingual-keyboard.js + layouts.js to your site, or load
+      // from a CDN once published. Here we use the project's src/.
       await import('../../src/bilingual-keyboard.js');
     } catch (err) {
-      status.style.color = '#f87171';
-      status.textContent =
-        'IMPORT ERROR: ' + err.message + '\n\n' +
+      errBox.style.display = 'block';
+      errBox.textContent =
+        'IMPORT ERROR: ' + err.message + '\n' +
         'Check that the path ../../src/bilingual-keyboard.js is reachable from ' +
         location.pathname;
     }
-
-    // Component code may set the flag synchronously after import resolves,
-    // but a userscript or extension may also be racing — give it a moment.
-    setTimeout(() => {
-      // Don't overwrite an error message we already wrote
-      if (status.style.color === 'rgb(248, 113, 113)') return;
-      const flag = window.__bilangSlidekeys__;
-      const kb = document.querySelector('bilingual-keyboard');
-      const lines = [];
-      lines.push('window.__bilangSlidekeys__ = ' + JSON.stringify(flag, null, 2));
-      lines.push('Element exists in DOM: ' + !!kb);
-      lines.push('Custom element registered: ' + !!customElements.get('bilingual-keyboard'));
-      lines.push('Shadow DOM attached: ' + !!(kb && kb.shadowRoot));
-      status.textContent = lines.join('\n');
-    }, 600);
   }
 </script>
 
