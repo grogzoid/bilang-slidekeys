@@ -1,0 +1,32 @@
+{
+  "name": "bilang-slidekeys",
+  "version": "0.2.1",
+  "description": "Bilingual on-screen keyboard (English/Ukrainian) as a web component",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./layouts": "./src/layouts.js",
+    "./keyboard": "./src/bilingual-keyboard.js",
+    "./react": "./src/BilingualKeyboard.jsx"
+  },
+  "files": [
+    "src/"
+  ],
+  "keywords": [
+    "keyboard",
+    "virtual-keyboard",
+    "ukrainian",
+    "bilingual",
+    "web-component"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bilang-slidekeys - Self-Playing Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0d0d1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .demo-badge {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: rgba(126, 200, 227, 0.12);
+      border: 1px solid rgba(126, 200, 227, 0.25);
+      color: #7ec8e3;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      z-index: 200000;
+      opacity: 0.7;
+    }
+
+    .stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .stage.fade-out {
+      opacity: 0;
+    }
+
+    .title {
+      color: #7ec8e3;
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      margin-bottom: 48px;
+      opacity: 0.6;
+    }
+
+    #demo-input {
+      width: 100%;
+      max-width: 600px;
+      background: #111122;
+      border: 2px solid #333;
+      border-radius: 12px;
+      color: #e0e0e0;
+      font-size: 24px;
+      font-family: inherit;
+      padding: 16px 20px;
+      outline: none;
+      text-align: center;
+      transition: border-color 0.3s;
+      caret-color: transparent;
+    }
+
+    #demo-input:focus {
+      border-color: #7ec8e3;
+    }
+
+    #demo-input::placeholder {
+      color: #555;
+    }
+
+    .livetype-label {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(126, 200, 227, 0.1);
+      border: 1px solid rgba(126, 200, 227, 0.3);
+      color: #7ec8e3;
+      font-size: 15px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      z-index: 200001;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .livetype-label.visible {
+      opacity: 1;
+    }
+
+    /* Override the keyboard's fixed positioning for our layout */
+    bilingual-keyboard {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="demo-badge">self-playing demo</div>
+
+  <div class="stage" id="stage">
+    <div class="title">bilang-slidekeys</div>
+    <input type="text" id="demo-input" placeholder="Type here..." readonly>
+  </div>
+
+  <div class="livetype-label" id="livetype-label">
+    LiveType Mode &mdash; Physical keyboard &rarr; Ukrainian
+  </div>
+
+  <bilingual-keyboard id="kb" active-lang="uk" input-mode="bound"></bilingual-keyboard>
+
+  <script type="module">
+    import '../src/bilingual-keyboard.js';
+
+    const kb = document.getElementById('kb');
+    const input = document.getElementById('demo-input');
+    const stage = document.getElementById('stage');
+    const livetypeLabel = document.getElementById('livetype-label');
+
+    // -- Utilities --
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /** Find a key element in the shadow DOM by matching the displayed active-char text */
+    function findKeyByChar(char) {
+      const shadow = kb.shadowRoot;
+      if (!shadow) return null;
+      const keys = shadow.querySelectorAll('.kb-key');
+      for (const key of keys) {
+        // In normal mode, check .active-char
+        const activeSpan = key.querySelector('.active-char');
+        if (activeSpan && activeSpan.textContent === char) return key;
+        // In LiveType mode (with diagonal opt-in), check .diag-primary
+        const diagPrimary = key.querySelector('.diag-primary');
+        if (diagPrimary && diagPrimary.textContent === char) return key;
+      }
+      return null;
+    }
+
+    /** Find the space key */
+    function findSpaceKey() {
+      const shadow = kb.shadowRoot;
+      if (!shadow) return null;
+      return shadow.querySelector('.kb-key.space');
+    }
+
+    /** Highlight a key element briefly */
+    async function highlightKey(keyEl, duration = 180) {
+      if (!keyEl) return;
+      keyEl.classList.add('pressed');
+      await delay(duration);
+      keyEl.classList.remove('pressed');
+    }
+
+    /** Type a single character into the input with key highlight */
+    async function typeChar(char) {
+      let keyEl;
+      if (char === ' ') {
+        keyEl = findSpaceKey();
+      } else {
+        keyEl = findKeyByChar(char);
+        // Try uppercase/shifted version: the keyboard shows the shifted char
+        // when shift is active. For uppercase, we need to find by lowercase first.
+        if (!keyEl) {
+          keyEl = findKeyByChar(char.toLowerCase());
+        }
+      }
+
+      // Start highlight
+      const highlightPromise = highlightKey(keyEl, 180);
+
+      // Insert character
+      input.value += char;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+
+      await highlightPromise;
+    }
+
+    /** Type a string character by character */
+    async function typeString(text, charDelay = 200, spaceDelay = 350) {
+      for (const char of text) {
+        // For uppercase Ukrainian letters, we need shift
+        const isUpper = char !== char.toLowerCase() && char !== char.toUpperCase() ? false : (char === char.toUpperCase() && char !== char.toLowerCase());
+
+        if (isUpper && char !== ' ') {
+          // Briefly activate shift visual
+          const shadow = kb.shadowRoot;
+          const shiftKey = shadow ? shadow.querySelector('.kb-key.shift') : null;
+          if (shiftKey) {
+            shiftKey.classList.add('active-shift', 'pressed');
+            await delay(80);
+            shiftKey.classList.remove('pressed');
+          }
+
+          // The keyboard re-renders on shift, so we need to find the shifted char
+          // For simplicity in the demo, we just highlight what we can find
+          const keyEl = findKeyByChar(char) || findKeyByChar(char.toLowerCase());
+          const highlightPromise = highlightKey(keyEl, 180);
+          input.value += char;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          await highlightPromise;
+
+          // Release shift visual
+          if (shiftKey) shiftKey.classList.remove('active-shift');
+        } else {
+          await typeChar(char);
+        }
+
+        if (char === ' ') {
+          await delay(spaceDelay);
+        } else {
+          await delay(charDelay);
+        }
+      }
+    }
+
+    /** Clear the input */
+    function clearInput() {
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    // -- Scene Definitions --
+
+    async function scene1() {
+      // "Привіт" - Hello
+      clearInput();
+      kb.setAttribute('active-lang', 'uk');
+      kb.setAttribute('input-mode', 'bound');
+
+      // Make keyboard visible
+      if (!kb.hasAttribute('visible')) {
+        kb.setAttribute('visible', '');
+      }
+      await delay(600);
+
+      // Type "Привіт" - uppercase П requires shift
+      await typeString('Привіт', 250, 350);
+
+      // Admire
+      await delay(1500);
+    }
+
+    async function scene2() {
+      // "Це класна клавіатура"
+      clearInput();
+      await delay(400);
+
+      await typeString('Це класна клавіатура', 180, 300);
+
+      // Admire
+      await delay(1500);
+    }
+
+    async function scene3() {
+      // LiveType mode demo
+      clearInput();
+      await delay(400);
+
+      // Switch to LiveType mode + opt into diagonal key style for visual flair
+      kb.setAttribute('input-mode', 'live-type');
+      kb.setAttribute('live-type-keys', 'diagonal');
+      await delay(300);
+
+      // Show floating label
+      livetypeLabel.classList.add('visible');
+      await delay(800);
+
+      // Type a few characters showing diagonal layout
+      // (LiveType + diagonal renders keys with both languages, top-left + bottom-right)
+      await typeString('вітаю', 250, 350);
+
+      await delay(1200);
+
+      // Hide label and switch back
+      livetypeLabel.classList.remove('visible');
+      await delay(400);
+      kb.setAttribute('input-mode', 'bound');
+      kb.removeAttribute('live-type-keys');
+      await delay(300);
+    }
+
+    async function scene4() {
+      // Fade out and reset
+      stage.classList.add('fade-out');
+      await delay(800);
+
+      clearInput();
+
+      stage.classList.remove('fade-out');
+      await delay(200);
+    }
+
+    // -- Main Loop --
+
+    async function runDemo() {
+      // Initial setup
+      kb.setAttribute('active-lang', 'uk');
+      kb.setAttribute('input-mode', 'bound');
+      kb.setAttribute('visible', '');
+
+      // Wait for component to fully render
+      await delay(800);
+
+      while (true) {
+        await scene1();
+        await scene2();
+        await scene3();
+        await scene4();
+      }
+    }
+
+    // Kick off when the keyboard is ready
+    if (kb.shadowRoot) {
+      runDemo();
+    } else {
+      // Fallback: wait for custom element upgrade
+      customElements.whenDefined('bilingual-keyboard').then(() => {
+        runDemo();
+      });
+    }
+  </script>
+</body>
+</html>

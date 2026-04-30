@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Install bilang-slidekeys via Tampermonkey</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="install-style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Install bilang-slidekeys via Tampermonkey</h1>
+</header>
+<h1 id="install-bilang-slidekeys-via-tampermonkey">Install
+bilang-slidekeys via Tampermonkey</h1>
+<p>A step-by-step tutorial for installing the userscript in Chrome (or
+any Chromium browser: Edge, Brave, Arc, Opera). About 5 minutes start to
+finish.</p>
+<blockquote>
+<p><strong>Why a userscript?</strong> Until the Chrome Web Store
+extension is published, the userscript is the easiest way to use
+bilang-slidekeys on any website. The script stays out of your way until
+you summon it — by the hotkey <strong>Ctrl+Shift+`</strong> (backtick)
+or via the Tampermonkey extension menu — then a virtual keyboard slides
+up so you can type Ukrainian.</p>
+</blockquote>
+<h2 id="step-1-install-tampermonkey">Step 1 — Install Tampermonkey</h2>
+<p>Tampermonkey is a free browser extension that runs userscripts. It’s
+the standard tool for this — over 10 million users.</p>
+<ol type="1">
+<li>Open the Chrome Web Store: <a
+href="https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo">chromewebstore.google.com</a></li>
+<li>Click <strong>Add to Chrome</strong></li>
+<li>Confirm the permission prompt</li>
+</ol>
+<figure>
+<img src="screenshots/01-tampermonkey-store.png"
+alt="Tampermonkey listing on Chrome Web Store" />
+<figcaption aria-hidden="true">Tampermonkey listing on Chrome Web
+Store</figcaption>
+</figure>
+<p>After install, you’ll see a small Tampermonkey icon in your browser
+toolbar (top-right area). If it’s hidden, click the puzzle piece icon
+and pin Tampermonkey to keep it visible.</p>
+<figure>
+<img src="screenshots/02-toolbar-icon.png"
+alt="Chrome Extensions menu showing Tampermonkey with pin option" />
+<figcaption aria-hidden="true">Chrome Extensions menu showing
+Tampermonkey with pin option</figcaption>
+</figure>
+<h2 id="step-2-verify-tampermonkey-is-enabled">Step 2 — Verify
+Tampermonkey is enabled</h2>
+<p>Click the Tampermonkey icon. You should see “Dashboard,” “Utilities,”
+and other options. If you see a warning about being disabled, follow
+Tampermonkey’s prompts to enable it (Chrome sometimes asks for explicit
+confirmation).</p>
+<figure>
+<img src="screenshots/03-tampermonkey-popup.png"
+alt="Tampermonkey popup menu" />
+<figcaption aria-hidden="true">Tampermonkey popup menu</figcaption>
+</figure>
+<h2 id="step-3-install-bilang-slidekeys">Step 3 — Install
+bilang-slidekeys</h2>
+<p>The userscript lives at:</p>
+<p><strong>https://github.com/grogzoid/bilang-slidekeys/blob/main/userscript/bilang-slidekeys.user.js</strong></p>
+<p>Two ways to install — pick whichever works for you.</p>
+<h3 id="option-a-one-click-install-from-github-easiest">Option A —
+One-click install from GitHub (easiest)</h3>
+<ol type="1">
+<li><p>Open the link above in your browser</p></li>
+<li><p>Click the <strong>Raw</strong> button (top-right of the file
+viewer on GitHub)</p>
+<figure>
+<img src="screenshots/04-github-file-view.png"
+alt="GitHub file view with Raw button" />
+<figcaption aria-hidden="true">GitHub file view with Raw
+button</figcaption>
+</figure></li>
+<li><p>The file should open as a <code>.user.js</code> URL. Tampermonkey
+detects this and shows an install screen automatically:</p>
+<figure>
+<img src="screenshots/05-tampermonkey-install-confirm.png"
+alt="Tampermonkey install confirmation" />
+<figcaption aria-hidden="true">Tampermonkey install
+confirmation</figcaption>
+</figure></li>
+<li><p>Click <strong>Install</strong></p></li>
+</ol>
+<p>That’s it. The script is now active.</p>
+<h3 id="option-b-manual-install-via-the-tampermonkey-dashboard">Option B
+— Manual install via the Tampermonkey dashboard</h3>
+<p>If Option A doesn’t trigger the install screen (some browsers block
+this):</p>
+<ol type="1">
+<li><p>Click the Tampermonkey icon → <strong>Dashboard</strong></p>
+<figure>
+<img src="screenshots/06-tampermonkey-dashboard.png"
+alt="Tampermonkey dashboard" />
+<figcaption aria-hidden="true">Tampermonkey dashboard</figcaption>
+</figure></li>
+<li><p>Click the <strong>+</strong> tab (Create a new script)</p></li>
+<li><p>Delete the placeholder content in the editor</p></li>
+<li><p>Open
+https://raw.githubusercontent.com/grogzoid/bilang-slidekeys/main/userscript/bilang-slidekeys.user.js
+in another tab</p></li>
+<li><p>Copy the entire contents</p></li>
+<li><p>Paste into the Tampermonkey editor</p></li>
+<li><p>Press <strong>Ctrl+S</strong> (or <strong>Cmd+S</strong> on
+macOS) to save</p>
+<figure>
+<img src="screenshots/07-tampermonkey-editor.png"
+alt="Tampermonkey editor with script content" />
+<figcaption aria-hidden="true">Tampermonkey editor with script
+content</figcaption>
+</figure></li>
+<li><p>Close the editor tab. The script is now installed.</p></li>
+</ol>
+<h2 id="step-4-turn-the-keyboard-on">Step 4 — Turn the keyboard on</h2>
+<p>By default the script stays out of your way — no floating button, no
+keyboard, nothing visible. You activate it on the pages where you want
+to type Ukrainian. Two ways:</p>
+<h3 id="hotkey-fastest">Hotkey (fastest)</h3>
+<p>Press <strong>Ctrl + Shift + `</strong> (backtick — the key above
+Tab, shares with <code>~</code>) on any allowed page. The keyboard panel
+slides up immediately and the floating ⌨️ button appears in the
+bottom-right corner.</p>
+<figure>
+<img src="screenshots/08-floating-button-on-page.png"
+alt="Floating keyboard button on Wikipedia" />
+<figcaption aria-hidden="true">Floating keyboard button on
+Wikipedia</figcaption>
+</figure>
+<figure>
+<img src="screenshots/09-keyboard-open-on-page.png"
+alt="Keyboard panel open on Wikipedia article" />
+<figcaption aria-hidden="true">Keyboard panel open on Wikipedia
+article</figcaption>
+</figure>
+<p>Press the hotkey again to hide the panel. The floating button stays
+around so you can summon it again with a click.</p>
+<h3 id="tampermonkey-menu">Tampermonkey menu</h3>
+<p>Click the Tampermonkey icon in your toolbar. Hover over (or click)
+<strong>Bilang SlideKeys</strong> to see two new commands:</p>
+<ul>
+<li><strong>“Toggle keyboard here”</strong> — show/hide on this page
+only. Resets when you reload.</li>
+<li><strong>“Always enable on [hostname]”</strong> — persistent. Click
+once and the keyboard auto-loads on this site every time you visit.
+Click again (“Stop always-enabling”) to remove the auto-load.</li>
+</ul>
+<p>Use “Always enable” for sites you type Ukrainian on regularly
+(e.g. your email, language-learning site, friend’s chat). Use “Toggle
+here” or the hotkey for one-off use.</p>
+<h3 id="try-typing">Try typing</h3>
+<p>With the keyboard panel open:</p>
+<ol type="1">
+<li>Click any text input, textarea, or rich-text editor on the page</li>
+<li>Click letters on the virtual keyboard — Ukrainian characters appear
+in the input</li>
+</ol>
+<p>If nothing happens: - The Tampermonkey dashboard should show “Bilang
+SlideKeys” as <strong>enabled</strong> (green toggle) - The site
+shouldn’t be in the script’s exclude list (banks and password managers —
+see “Customizing what sites” below) - The page should be fully loaded -
+For some sites with very strict CSP, the keyboard may fail to inject —
+try a different site to confirm</p>
+<h2 id="step-5-customize-the-hotkey">Step 5 — Customize the hotkey</h2>
+<p>The default is <strong>Ctrl + Shift + `</strong>. To change it:</p>
+<ol type="1">
+<li><p>Tampermonkey icon → <strong>Dashboard</strong></p></li>
+<li><p>Click <strong>Bilang SlideKeys</strong> (opens the script
+editor)</p></li>
+<li><p>Find this line near the top of the launcher:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> HOTKEY <span class="op">=</span> <span class="st">&#39;Ctrl+Shift+Backquote&#39;</span><span class="op">;</span></span></code></pre></div></li>
+<li><p>Change it (examples: <code>'Alt+Shift+KeyK'</code>,
+<code>'Ctrl+Alt+Slash'</code>, or <code>''</code> to disable the hotkey
+entirely)</p></li>
+<li><p><strong>Ctrl+S</strong> to save</p></li>
+<li><p>Refresh any open page for the change to take effect</p></li>
+</ol>
+<p>The Tampermonkey menu commands (“Toggle keyboard here” and “Always
+enable on [hostname]”) work regardless of the hotkey setting — they’re
+independent paths.</p>
+<h2 id="step-6-try-livetype-mode">Step 6 — Try LiveType mode</h2>
+<p>LiveType lets you type on your physical keyboard and produce
+Ukrainian text in real time, using the <strong>standard Ukrainian
+keyboard layout (ЙЦУКЕН)</strong>.</p>
+<ol type="1">
+<li>Click in any text input</li>
+<li>Open the keyboard panel</li>
+<li>Click the <strong>LiveType</strong> button (bottom-left of the
+panel)</li>
+<li>Type on your physical keyboard — each key produces the Ukrainian
+letter that the standard Ukrainian layout assigns to that QWERTY
+position</li>
+</ol>
+<p><strong>Example:</strong> to type <code>привіт</code> (hello), press
+the physical keys <code>ghbdsn</code>. That’s because ЙЦУКЕН maps:</p>
+<table>
+<thead>
+<tr>
+<th>Ukrainian</th>
+<th>Physical QWERTY key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>п</td>
+<td>g</td>
+</tr>
+<tr>
+<td>р</td>
+<td>h</td>
+</tr>
+<tr>
+<td>и</td>
+<td>b</td>
+</tr>
+<tr>
+<td>в</td>
+<td>d</td>
+</tr>
+<tr>
+<td>і</td>
+<td>s</td>
+</tr>
+<tr>
+<td>т</td>
+<td>n</td>
+</tr>
+</tbody>
+</table>
+<p>This is the same mapping a Ukrainian native uses when their OS
+keyboard layout is set to Ukrainian. LiveType lets you practice that
+muscle memory in the browser without changing your system keyboard.</p>
+<p>The button glows blue when LiveType is active. Click it again to turn
+off.</p>
+<h3 id="what-this-is-not-phonetic-transliteration">What this is
+<em>not</em>: phonetic transliteration</h3>
+<p>LiveType uses <strong>positional</strong> mapping (the QWERTY
+position holds a Ukrainian letter), not <strong>phonetic</strong>
+mapping (Latin letters that sound like Ukrainian).</p>
+<p>If you’d rather type <code>pryvit</code> and get <code>привіт</code>
+— i.e. type Latin letters that <em>sound like</em> the Ukrainian word —
+that’s phonetic transliteration. bilang-slidekeys does not do this.
+Tools that do:</p>
+<ul>
+<li><strong><a href="https://translit.net/">Translit.net</a></strong> /
+<strong><a href="https://translit.cc/uk/">translit.cc</a></strong> — web
+pages where you type romanized Ukrainian and get Cyrillic</li>
+<li><strong><a
+href="https://chromewebstore.google.com/detail/google-input-tools/mclkkofklkfljcocdinagocijmpgbhab">Google
+Input Tools</a></strong> — Chrome extension with a Ukrainian phonetic
+option</li>
+<li><strong><a
+href="https://chromewebstore.google.com/search/ukrainian%20phonetic%20keyboard">Ukrainian
+Phonetic Keyboard</a></strong> — several phonetic-only Chrome
+extensions</li>
+<li><strong>macOS / iOS</strong> — built-in “Ukrainian — QWERTY” layout
+(phonetic-leaning)</li>
+<li><strong>Keyman</strong> — phonetic Ukrainian keymans available
+cross-platform</li>
+</ul>
+<p>Phonetic typing is faster for English speakers who haven’t memorized
+ЙЦУКЕН. The trade-off: the layout you’re using doesn’t match what real
+Ukrainian keyboards have, so muscle memory doesn’t transfer if you ever
+switch to a phone or a Ukrainian-default machine. LiveType is
+intentionally for users who want to learn the real layout.</p>
+<h3 id="what-changes-when-livetype-is-on">What changes when LiveType is
+on</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th></th>
+<th>LiveType OFF</th>
+<th>LiveType ON</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Click virtual keys</td>
+<td>Inserts the active language’s character</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>Type on physical keyboard</td>
+<td>Latin character (browser default)</td>
+<td>Ukrainian character (or active language)</td>
+</tr>
+<tr>
+<td>Press Enter, Backspace, arrows</td>
+<td>Browser handles normally</td>
+<td>Same — modifiers and special keys pass through</td>
+</tr>
+<tr>
+<td>Press Ctrl+A / Ctrl+C / Ctrl+V</td>
+<td>Browser shortcut works</td>
+<td>Same — modifier combos are not intercepted</td>
+</tr>
+<tr>
+<td>Caps Lock + letter</td>
+<td>Browser handles</td>
+<td>Produces uppercase Ukrainian</td>
+</tr>
+<tr>
+<td>Shift + letter</td>
+<td>Browser handles</td>
+<td>Produces uppercase or shifted Ukrainian</td>
+</tr>
+<tr>
+<td>Type into a regular form input</td>
+<td>Latin characters</td>
+<td>Ukrainian characters</td>
+</tr>
+<tr>
+<td>Type into a contenteditable (Slack, Gmail, WhatsApp)</td>
+<td>Latin characters</td>
+<td>Ukrainian characters</td>
+</tr>
+</tbody>
+</table>
+<p>The intuition: your physical keys <em>behave as if</em> you were on a
+Ukrainian-layout keyboard, but only while LiveType is on. Toggle off and
+your keyboard returns to normal English (or whatever your OS layout is)
+immediately.</p>
+<h2 id="activate-from-javascript">Activate from JavaScript</h2>
+<p>If you want to control the keyboard programmatically — e.g. from a
+bookmarklet, browser console, or your own script — the keyboard is a
+custom DOM element you can query and manipulate:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Open the keyboard panel</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;bilingual-keyboard&#39;</span>)<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;visible&#39;</span><span class="op">,</span> <span class="st">&#39;&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Close it</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;bilingual-keyboard&#39;</span>)<span class="op">.</span><span class="fu">removeAttribute</span>(<span class="st">&#39;visible&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Toggle</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> kb <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;bilingual-keyboard&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (kb<span class="op">.</span><span class="fu">hasAttribute</span>(<span class="st">&#39;visible&#39;</span>)) kb<span class="op">.</span><span class="fu">removeAttribute</span>(<span class="st">&#39;visible&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span> kb<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;visible&#39;</span><span class="op">,</span> <span class="st">&#39;&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Switch active language</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>kb<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;active-lang&#39;</span><span class="op">,</span> <span class="st">&#39;en&#39;</span>)<span class="op">;</span>  <span class="co">// or &#39;uk&#39;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">// Enable LiveType from code</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>kb<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;input-mode&#39;</span><span class="op">,</span> <span class="st">&#39;live-type&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">// Listen for events</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>kb<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;key-input&#39;</span><span class="op">,</span> (e) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;typed:&#39;</span><span class="op">,</span> e<span class="op">.</span><span class="at">detail</span><span class="op">.</span><span class="at">char</span><span class="op">,</span> <span class="st">&#39;in&#39;</span><span class="op">,</span> e<span class="op">.</span><span class="at">detail</span><span class="op">.</span><span class="at">lang</span>)<span class="op">;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>Useful as a bookmarklet: paste the toggle snippet into a JavaScript
+bookmarklet to summon the keyboard from the bookmarks bar without using
+the hotkey.</p>
+<h2 id="try-it-here">Try it here</h2>
+<p>The HTML version of this tutorial includes a working demo form below.
+Click into any field and click the floating ⌨️ button (or use
+Ctrl+Shift+`). The script must be installed and enabled on this page for
+it to work.</p>
+<div class="demo-form">
+<h4 style="color:#7ec8e3;margin-top:0;">
+Demo form
+</h4>
+<p style="font-size:14px;color:#888;margin-bottom:16px;">
+Practice typing into different input types:
+</p>
+<label style="display:block;font-size:13px;color:#888;margin-bottom:4px;">Single-line
+input</label>
+<input type="text" placeholder="Привіт..." style="width:100%;padding:10px;font-size:16px;background:#1a1a2e;color:#e0e0e0;border:1px solid #444;border-radius:6px;margin-bottom:16px;box-sizing:border-box;">
+<label style="display:block;font-size:13px;color:#888;margin-bottom:4px;">Multi-line
+textarea</label>
+<textarea placeholder="Type a sentence..." style="width:100%;min-height:80px;padding:10px;font-size:16px;background:#1a1a2e;color:#e0e0e0;border:1px solid #444;border-radius:6px;margin-bottom:16px;box-sizing:border-box;font-family:inherit;resize:vertical;"></textarea>
+<label style="display:block;font-size:13px;color:#888;margin-bottom:4px;">contenteditable
+div (like Slack/Gmail)</label>
+<div contenteditable="true"
+style="width:100%;min-height:60px;padding:10px;font-size:16px;background:#1a1a2e;color:#e0e0e0;border:1px solid #444;border-radius:6px;box-sizing:border-box;outline:none;">
+Click here, then type…
+</div>
+</div>
+<h2 id="customizing-what-sites-the-script-runs-on">Customizing what
+sites the script runs on</h2>
+<p>When you summon the keyboard (via hotkey or “Always enable on
+[hostname]”), the script will inject on every web page
+<strong>except</strong> these blocked domains:</p>
+<ul>
+<li>chase.com (banking)</li>
+</ul>
+<p>To exclude additional sensitive sites of your own (banks, brokerages,
+password managers), edit the <code>@exclude</code> lines in the script’s
+metadata block — see “Customizing what sites the script runs on”
+below.</p>
+<p>To add your own exclusions:</p>
+<ol type="1">
+<li>Tampermonkey dashboard → <strong>Bilang SlideKeys</strong></li>
+<li>Find the <code>// ==UserScript==</code> block at the top</li>
+<li>Add a new line: <code>// @exclude *://*.example.com/*</code></li>
+<li>Ctrl+S to save</li>
+</ol>
+<figure>
+<img src="screenshots/10-tampermonkey-editor-excludes.png"
+alt="Tampermonkey editor showing @exclude lines" />
+<figcaption aria-hidden="true">Tampermonkey editor showing <span
+class="citation" data-cites="exclude">@exclude</span> lines</figcaption>
+</figure>
+<h2 id="customizing-the-floating-button">Customizing the floating
+button</h2>
+<ul>
+<li><strong>Drag it</strong> anywhere on the page (click and hold, then
+move). Position is saved across page loads.</li>
+<li><strong>Dismiss it</strong> by hovering and clicking the small ×
+that appears in the top-right corner of the button. It disappears for
+the rest of the session. Open the keyboard with the hotkey to bring it
+back.</li>
+</ul>
+<h2 id="updating-to-new-versions">Updating to new versions</h2>
+<p>When new versions are released, Tampermonkey can auto-check:</p>
+<ol type="1">
+<li>Tampermonkey dashboard → <strong>Bilang SlideKeys</strong></li>
+<li><strong>File</strong> menu (top-left) → <strong>Reload from
+URL</strong></li>
+</ol>
+<p>Or set Tampermonkey to auto-update userscripts (Settings → check
+“Auto-update”).</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>The keyboard isn’t visible on a page and the hotkey does
+nothing</strong> - The script is opt-in: nothing renders until you
+summon it. Press <strong>Ctrl+Shift+`</strong> to show, or use the
+Tampermonkey menu → “Toggle keyboard here”. - Confirm the script is
+enabled in Tampermonkey dashboard (green toggle next to “Bilang
+SlideKeys”). - Confirm the site isn’t excluded (banks, password managers
+— see “Customizing what sites” section).</p>
+<p><strong>The keyboard appears but typing doesn’t insert characters
+into a text field</strong> - Click the text field first to focus it,
+then type. The keyboard binds to the last-clicked input. - For rich-text
+editors (Slack, Gmail compose, WhatsApp Web): make sure you’ve clicked
+inside the message area before typing.</p>
+<p><strong>The hotkey conflicts with another site shortcut</strong> -
+Change the hotkey in the script editor as described in Step 5.</p>
+<p><strong>The Tampermonkey install screen doesn’t appear when I click
+“Raw”</strong> - Some browsers block userscript installs via the URL.
+Use Option B (manual paste).</p>
+<p><strong>Two keyboards appear on a page</strong> - This means a
+website has its own embedded copy AND the userscript is also injecting.
+The userscript should defer, but if it doesn’t, refresh the page. Report
+the site so we can investigate.</p>
+<p><strong>Banking site has the keyboard injected by mistake</strong> -
+Add an <code>@exclude</code> line for that site’s domain (Step 6
+above).</p>
+<h2 id="privacy">Privacy</h2>
+<p>This script: - Does NOT collect any data - Does NOT make any network
+requests - Does NOT contact any external servers - Stores ONLY the
+floating button’s position in your browser’s localStorage (for
+persistence across reloads)</p>
+<p>The full source is open on GitHub — anyone can audit it.</p>
+<h2 id="got-stuck">Got stuck?</h2>
+<p>Check the <a href="https://www.tampermonkey.net/faq.php">Tampermonkey
+FAQ</a> or open an issue on the <a
+href="https://github.com/grogzoid/bilang-slidekeys/issues">project’s
+GitHub</a>.</p>
+</body>
+</html>

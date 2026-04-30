@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Background tile -->
+  <rect x="0" y="0" width="128" height="128" rx="22" fill="#1a1a2e"/>
+
+  <!-- Globe -->
+  <circle cx="64" cy="64" r="44" fill="#1e1e2e" stroke="#7ec8e3" stroke-width="2.5"/>
+
+  <!-- Globe latitudes -->
+  <ellipse cx="64" cy="64" rx="44" ry="14" fill="none" stroke="#7ec8e3" stroke-width="1.5" opacity="0.5"/>
+  <ellipse cx="64" cy="64" rx="44" ry="28" fill="none" stroke="#7ec8e3" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Globe longitudes -->
+  <ellipse cx="64" cy="64" rx="14" ry="44" fill="none" stroke="#7ec8e3" stroke-width="1.5" opacity="0.5"/>
+  <ellipse cx="64" cy="64" rx="28" ry="44" fill="none" stroke="#7ec8e3" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Equator -->
+  <line x1="20" y1="64" x2="108" y2="64" stroke="#7ec8e3" stroke-width="1.5" opacity="0.7"/>
+
+  <!-- Keycap overlay (front-and-center) -->
+  <rect x="38" y="42" width="52" height="50" rx="8" fill="#1a1a2e" stroke="#fff" stroke-width="2.5"/>
+  <text x="64" y="80" text-anchor="middle"
+        font-family="Segoe UI, system-ui, sans-serif" font-size="36" font-weight="700"
+        fill="#7ec8e3">Ф</text>
+</svg>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilingual Recipe Card Builder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px 24px 120px;
+      background: #1a1410;
+      color: #e0d5c8;
+      font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      color: #e8a946;
+      margin: 0 0 4px;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #9a8a78;
+      margin-bottom: 32px;
+      font-size: 14px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Decorative top border pattern */
+    .card {
+      max-width: 860px;
+      margin: 0 auto 40px;
+      background: #2a2018;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #3d3020;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 80px rgba(232, 169, 70, 0.04);
+    }
+
+    .card-top-border {
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        #e8a946 0px, #e8a946 20px,
+        #d4942f 20px, #d4942f 22px,
+        transparent 22px, transparent 26px,
+        #c4843a 26px, #c4843a 46px,
+        #d4942f 46px, #d4942f 48px,
+        transparent 48px, transparent 52px
+      );
+    }
+
+    .card-header {
+      padding: 28px 32px 20px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(232, 169, 70, 0.08) 0%, transparent 100%);
+      border-bottom: 1px solid #3d3020;
+    }
+
+    .card-header .dish-icon {
+      font-size: 40px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .dish-names {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .dish-name-en {
+      font-size: 28px;
+      color: #e8a946;
+      font-weight: 700;
+    }
+
+    .dish-name-separator {
+      color: #5a4a38;
+      font-size: 24px;
+    }
+
+    .dish-name-uk-input {
+      font-size: 26px;
+      font-family: 'Georgia', 'Cambria', serif;
+      font-weight: 700;
+      color: #f0c870;
+      background: rgba(232, 169, 70, 0.08);
+      border: 1px dashed #5a4a38;
+      border-radius: 8px;
+      padding: 4px 16px;
+      text-align: center;
+      outline: none;
+      width: 200px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .dish-name-uk-input:focus {
+      border-color: #e8a946;
+      background: rgba(232, 169, 70, 0.12);
+    }
+
+    .dish-name-uk-input::placeholder {
+      color: #6a5a48;
+    }
+
+    /* Section styling */
+    .card-section {
+      padding: 24px 32px;
+    }
+
+    .card-section + .card-section {
+      border-top: 1px solid #3d3020;
+    }
+
+    .section-title {
+      font-size: 18px;
+      color: #e8a946;
+      margin: 0 0 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title .icon {
+      font-size: 20px;
+    }
+
+    .lang-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #3d3020;
+    }
+
+    .lang-label {
+      font-size: 12px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #7a6a58;
+      font-weight: 600;
+    }
+
+    /* Ingredient rows */
+    .ingredient-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .ingredient-en {
+      color: #c8b8a4;
+      font-size: 15px;
+      padding: 6px 0;
+    }
+
+    .ingredient-en .quantity {
+      color: #e8a946;
+      font-weight: 600;
+    }
+
+    .ingredient-input {
+      font-family: 'Georgia', 'Cambria', serif;
+      font-size: 15px;
+      color: #e0d5c8;
+      background: rgba(232, 169, 70, 0.05);
+      border: 1px solid #3d3020;
+      border-radius: 6px;
+      padding: 6px 10px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      width: 100%;
+    }
+
+    .ingredient-input:focus {
+      border-color: #e8a946;
+      background: rgba(232, 169, 70, 0.1);
+    }
+
+    .ingredient-input::placeholder {
+      color: #5a4a38;
+      font-style: italic;
+    }
+
+    /* Step rows */
+    .step-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 12px;
+      align-items: start;
+    }
+
+    .step-en {
+      color: #c8b8a4;
+      font-size: 15px;
+      padding: 6px 0;
+      line-height: 1.5;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #e8a946;
+      color: #1a1410;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin-right: 8px;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
+
+    .step-textarea {
+      font-family: 'Georgia', 'Cambria', serif;
+      font-size: 15px;
+      color: #e0d5c8;
+      background: rgba(232, 169, 70, 0.05);
+      border: 1px solid #3d3020;
+      border-radius: 6px;
+      padding: 6px 10px;
+      outline: none;
+      resize: vertical;
+      min-height: 48px;
+      line-height: 1.5;
+      transition: border-color 0.2s, background 0.2s;
+      width: 100%;
+    }
+
+    .step-textarea:focus {
+      border-color: #e8a946;
+      background: rgba(232, 169, 70, 0.1);
+    }
+
+    .step-textarea::placeholder {
+      color: #5a4a38;
+      font-style: italic;
+    }
+
+    /* Preview section */
+    .preview-title {
+      text-align: center;
+      color: #e8a946;
+      font-size: 22px;
+      margin: 0 0 16px;
+      font-weight: 700;
+    }
+
+    .preview-card {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #2a2018;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #3d3020;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .preview-top-border {
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        #e8a946 0px, #e8a946 20px,
+        #d4942f 20px, #d4942f 22px,
+        transparent 22px, transparent 26px,
+        #c4843a 26px, #c4843a 46px,
+        #d4942f 46px, #d4942f 48px,
+        transparent 48px, transparent 52px
+      );
+    }
+
+    .preview-header {
+      text-align: center;
+      padding: 24px 32px 16px;
+      background: linear-gradient(180deg, rgba(232, 169, 70, 0.08) 0%, transparent 100%);
+      border-bottom: 1px solid #3d3020;
+    }
+
+    .preview-dish-name {
+      font-size: 26px;
+      color: #e8a946;
+      font-weight: 700;
+    }
+
+    .preview-dish-name-uk {
+      font-size: 22px;
+      color: #c49838;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .preview-section {
+      padding: 20px 32px;
+    }
+
+    .preview-section + .preview-section {
+      border-top: 1px solid #3d3020;
+    }
+
+    .preview-section-title {
+      font-size: 16px;
+      color: #e8a946;
+      margin: 0 0 12px;
+      font-weight: 700;
+    }
+
+    .preview-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .preview-col-title {
+      font-size: 11px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #7a6a58;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .preview-ingredient {
+      color: #c8b8a4;
+      font-size: 14px;
+      margin-bottom: 4px;
+      line-height: 1.5;
+    }
+
+    .preview-ingredient .pq {
+      color: #e8a946;
+      font-weight: 600;
+    }
+
+    .preview-step {
+      color: #c8b8a4;
+      font-size: 14px;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .preview-step .psn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      background: #e8a946;
+      color: #1a1410;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .preview-empty {
+      color: #5a4a38;
+      font-style: italic;
+      font-size: 14px;
+    }
+
+    .preview-bottom-flourish {
+      text-align: center;
+      padding: 12px;
+      color: #5a4a38;
+      font-size: 18px;
+      letter-spacing: 8px;
+    }
+
+    /* Warm divider */
+    .warm-divider {
+      text-align: center;
+      margin: 40px auto 24px;
+      max-width: 860px;
+      color: #5a4a38;
+      font-size: 16px;
+      letter-spacing: 8px;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 16px 12px 120px; }
+      .card-section { padding: 16px; }
+      .ingredient-row, .step-row, .lang-header, .preview-columns {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .dish-names { flex-direction: column; gap: 8px; }
+      .dish-name-separator { display: none; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Bilingual Recipe Card Builder</h1>
+  <p class="subtitle">Fill in the Ukrainian translation alongside the English recipe. The preview updates as you type.</p>
+
+  <!-- Editor Card -->
+  <div class="card">
+    <div class="card-top-border"></div>
+    <div class="card-header">
+      <span class="dish-icon">&#127858;</span>
+      <div class="dish-names">
+        <span class="dish-name-en">Borscht</span>
+        <span class="dish-name-separator">/</span>
+        <input
+          type="text"
+          class="dish-name-uk-input uk-input"
+          data-preview="dish-name"
+          placeholder="Борщ"
+        >
+      </div>
+    </div>
+
+    <!-- Ingredients -->
+    <div class="card-section">
+      <h2 class="section-title"><span class="icon">&#129382;</span> Ingredients / &#1030;&#1085;&#1075;&#1088;&#1077;&#1076;&#1110;&#1108;&#1085;&#1090;&#1080;</h2>
+      <div class="lang-header">
+        <span class="lang-label">English</span>
+        <span class="lang-label">&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072;</span>
+      </div>
+      <div id="ingredients-list"></div>
+    </div>
+
+    <!-- Steps -->
+    <div class="card-section">
+      <h2 class="section-title"><span class="icon">&#128221;</span> Steps / &#1050;&#1088;&#1086;&#1082;&#1080;</h2>
+      <div class="lang-header">
+        <span class="lang-label">English</span>
+        <span class="lang-label">&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072;</span>
+      </div>
+      <div id="steps-list"></div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="warm-divider">&#9830; &#9830; &#9830;</div>
+
+  <!-- Preview -->
+  <p class="preview-title">Card Preview</p>
+  <div class="preview-card">
+    <div class="preview-top-border"></div>
+    <div class="preview-header">
+      <div class="preview-dish-name">Borscht</div>
+      <div class="preview-dish-name-uk" id="preview-dish-uk"></div>
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-section-title">Ingredients / &#1030;&#1085;&#1075;&#1088;&#1077;&#1076;&#1110;&#1108;&#1085;&#1090;&#1080;</div>
+      <div class="preview-columns">
+        <div>
+          <div class="preview-col-title">English</div>
+          <div id="preview-ingredients-en"></div>
+        </div>
+        <div>
+          <div class="preview-col-title">&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072;</div>
+          <div id="preview-ingredients-uk"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <div class="preview-section-title">Steps / &#1050;&#1088;&#1086;&#1082;&#1080;</div>
+      <div class="preview-columns">
+        <div>
+          <div class="preview-col-title">English</div>
+          <div id="preview-steps-en"></div>
+        </div>
+        <div>
+          <div class="preview-col-title">&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072;</div>
+          <div id="preview-steps-uk"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-bottom-flourish">&#9830; &#9830; &#9830;</div>
+  </div>
+
+  <bilingual-keyboard active-lang="uk" input-mode="bound" visible></bilingual-keyboard>
+
+  <script type="module">
+    import '../src/bilingual-keyboard.js';
+
+    const ingredients = [
+      { en: '3 medium beets',       qty: '3',    placeholder: '3 середніх буряки' },
+      { en: '1 head of cabbage',    qty: '1',    placeholder: '1 головка капусти' },
+      { en: '3 potatoes',           qty: '3',    placeholder: '3 картоплини' },
+      { en: '2 carrots',            qty: '2',    placeholder: '2 морквини' },
+      { en: '1 onion',              qty: '1',    placeholder: '1 цибулина' },
+      { en: '2 cloves garlic',      qty: '2',    placeholder: '2 зубчики часнику' },
+      { en: '400g beef',            qty: '400g', placeholder: '400г яловичини' },
+      { en: 'Fresh dill',           qty: '',     placeholder: 'Свіжий кріп' },
+      { en: 'Sour cream',           qty: '',     placeholder: 'Сметана' },
+    ];
+
+    const steps = [
+      { en: 'Boil beef in salted water for 1.5 hours',          placeholder: 'Варити яловичину у підсоленій воді 1,5 години' },
+      { en: 'Peel and dice beets, potatoes, and carrots',       placeholder: 'Почистити і нарізати буряк, картоплю та моркву' },
+      { en: 'Shred cabbage, dice onion',                        placeholder: 'Нашаткувати капусту, нарізати цибулю' },
+      { en: 'Saut\u00e9 onion and carrots, add beets',         placeholder: 'Обсмажити цибулю та моркву, додати буряк' },
+      { en: 'Add potatoes to broth, cook 10 minutes',           placeholder: 'Додати картоплю до бульйону, варити 10 хвилин' },
+      { en: 'Add saut\u00e9ed vegetables and cabbage',          placeholder: 'Додати обсмажені овочі та капусту' },
+      { en: 'Simmer 15 minutes, add garlic',                    placeholder: 'Тушкувати 15 хвилин, додати часник' },
+      { en: 'Serve with sour cream and fresh dill',             placeholder: 'Подавати зі сметаною та свіжим кропом' },
+    ];
+
+    // Build ingredient rows
+    const ingredientsList = document.getElementById('ingredients-list');
+    ingredients.forEach((ing, i) => {
+      const row = document.createElement('div');
+      row.className = 'ingredient-row';
+
+      const enEl = document.createElement('div');
+      enEl.className = 'ingredient-en';
+      if (ing.qty) {
+        enEl.innerHTML = `<span class="quantity">${ing.qty}</span> ${ing.en.replace(ing.qty + ' ', '').replace(ing.qty, '')}`;
+      } else {
+        enEl.textContent = ing.en;
+      }
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'ingredient-input uk-input';
+      input.dataset.preview = `ingredient-${i}`;
+      input.placeholder = ing.placeholder;
+
+      row.appendChild(enEl);
+      row.appendChild(input);
+      ingredientsList.appendChild(row);
+    });
+
+    // Build step rows
+    const stepsList = document.getElementById('steps-list');
+    steps.forEach((step, i) => {
+      const row = document.createElement('div');
+      row.className = 'step-row';
+
+      const enEl = document.createElement('div');
+      enEl.className = 'step-en';
+      enEl.innerHTML = `<span class="step-number">${i + 1}</span>${step.en}`;
+
+      const textarea = document.createElement('textarea');
+      textarea.className = 'step-textarea uk-input';
+      textarea.dataset.preview = `step-${i}`;
+      textarea.placeholder = step.placeholder;
+      textarea.rows = 2;
+
+      row.appendChild(enEl);
+      row.appendChild(textarea);
+      stepsList.appendChild(row);
+    });
+
+    // Preview rendering
+    function renderPreview() {
+      // Dish name
+      const dishUkInput = document.querySelector('[data-preview="dish-name"]');
+      const previewDishUk = document.getElementById('preview-dish-uk');
+      previewDishUk.textContent = dishUkInput.value || '';
+
+      // Ingredients
+      const previewIngEn = document.getElementById('preview-ingredients-en');
+      const previewIngUk = document.getElementById('preview-ingredients-uk');
+      previewIngEn.innerHTML = '';
+      previewIngUk.innerHTML = '';
+
+      ingredients.forEach((ing, i) => {
+        const enDiv = document.createElement('div');
+        enDiv.className = 'preview-ingredient';
+        if (ing.qty) {
+          enDiv.innerHTML = `<span class="pq">${ing.qty}</span> ${ing.en.replace(ing.qty + ' ', '').replace(ing.qty, '')}`;
+        } else {
+          enDiv.textContent = ing.en;
+        }
+        previewIngEn.appendChild(enDiv);
+
+        const ukDiv = document.createElement('div');
+        ukDiv.className = 'preview-ingredient';
+        const val = document.querySelector(`[data-preview="ingredient-${i}"]`).value;
+        if (val) {
+          ukDiv.textContent = val;
+        } else {
+          ukDiv.innerHTML = '<span class="preview-empty">...</span>';
+        }
+        previewIngUk.appendChild(ukDiv);
+      });
+
+      // Steps
+      const previewStepsEn = document.getElementById('preview-steps-en');
+      const previewStepsUk = document.getElementById('preview-steps-uk');
+      previewStepsEn.innerHTML = '';
+      previewStepsUk.innerHTML = '';
+
+      steps.forEach((step, i) => {
+        const enDiv = document.createElement('div');
+        enDiv.className = 'preview-step';
+        enDiv.innerHTML = `<span class="psn">${i + 1}</span>${step.en}`;
+        previewStepsEn.appendChild(enDiv);
+
+        const ukDiv = document.createElement('div');
+        ukDiv.className = 'preview-step';
+        const val = document.querySelector(`[data-preview="step-${i}"]`).value;
+        if (val) {
+          ukDiv.innerHTML = `<span class="psn">${i + 1}</span>${val}`;
+        } else {
+          ukDiv.innerHTML = `<span class="psn">${i + 1}</span><span class="preview-empty">...</span>`;
+        }
+        previewStepsUk.appendChild(ukDiv);
+      });
+    }
+
+    // Initial render
+    renderPreview();
+
+    // Live update on any input
+    document.addEventListener('input', (e) => {
+      if (e.target.classList.contains('uk-input')) {
+        renderPreview();
+      }
+    });
+  </script>
+</body>
+</html>

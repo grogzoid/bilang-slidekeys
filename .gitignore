@@ -1,0 +1,17 @@
+# Emacs lock files
+.\#*
+
+# Editor backups
+*~
+.*.swp
+.*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Test artifacts
+.playwright-mcp/

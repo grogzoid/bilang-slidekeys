@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bilang-slidekeys — demos</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg: #0d0d1a;
+      --fg: #e0e0e0;
+      --muted: #888;
+      --accent: #7ec8e3;
+      --card: #16162a;
+      --card-hover: #1a1a32;
+      --border: #2a2a3e;
+      --border-hover: #555;
+      --code-bg: #1e1e2e;
+    }
+    html, body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+    body {
+      padding: 56px 24px 96px;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: var(--accent);
+      font-size: 36px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.5px;
+    }
+    .lede {
+      color: #c0c0c0;
+      font-size: 17px;
+      margin: 0 0 12px;
+      max-width: 680px;
+    }
+    .repo-link {
+      display: inline-block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 40px;
+      text-decoration: none;
+    }
+    .repo-link:hover {
+      color: var(--accent);
+    }
+    h2 {
+      color: var(--fg);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      margin: 40px 0 16px;
+      color: #999;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    a.card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 20px 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    }
+    a.card:hover {
+      border-color: var(--accent);
+      background: var(--card-hover);
+      transform: translateY(-1px);
+    }
+    a.card .label {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    a.card .name {
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 17px;
+    }
+    a.card .filename {
+      color: var(--muted);
+      font-size: 12px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+    }
+    a.card p {
+      margin: 0;
+      color: #c0c0c0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    a.card .badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 1px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(126, 200, 227, 0.12);
+      color: var(--accent);
+      font-weight: 500;
+      vertical-align: middle;
+    }
+    a.card .badge.alt {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+    }
+    .quick-links {
+      margin-top: 48px;
+      padding: 20px 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      color: #c0c0c0;
+    }
+    .quick-links h3 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+      font-weight: 600;
+    }
+    .quick-links ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px 16px;
+    }
+    .quick-links a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .quick-links a:hover {
+      text-decoration: underline;
+    }
+    code {
+      background: var(--code-bg);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<main>
+  <h1>bilang-slidekeys</h1>
+  <p class="lede">A bilingual on-screen keyboard for English / Ukrainian (and German, Spanish, French, Italian). Live demos below.</p>
+  <a class="repo-link" href="https://github.com/grogzoid/bilang-slidekeys">github.com/grogzoid/bilang-slidekeys ↗</a>
+
+  <h2>Interactive demos</h2>
+  <div class="grid">
+
+    <a class="card" href="playground.html">
+      <span class="label">
+        <span class="name">Playground</span>
+        <span class="filename">playground.html</span>
+      </span>
+      <p>Mode switcher, Latin language picker, plain inputs and textareas, plus an event log. The kitchen-sink page for poking at every option.</p>
+    </a>
+
+    <a class="card" href="quiz.html">
+      <span class="label">
+        <span class="name">A1 Translation Quiz</span>
+        <span class="filename">quiz.html</span>
+      </span>
+      <p>Translate 10 English phrases into Ukrainian. Submit-all with optional corrections. Practical learner format.</p>
+    </a>
+
+    <a class="card" href="chat.html">
+      <span class="label">
+        <span class="name">Bilingual Chat</span>
+        <span class="filename">chat.html</span>
+      </span>
+      <p>Two-pane chat console: read English, reply in Ukrainian. Shows the keyboard in a real-feeling messaging UI.</p>
+    </a>
+
+    <a class="card" href="poetry.html">
+      <span class="label">
+        <span class="name">Shevchenko Typewriter</span>
+        <span class="filename">poetry.html</span>
+      </span>
+      <p>Type "Заповіт" character by character. Ghost text guides you, correct keys glow green, mistakes red. Letters and accuracy at the end.</p>
+    </a>
+
+    <a class="card" href="recipe.html">
+      <span class="label">
+        <span class="name">Borscht Recipe Card</span>
+        <span class="filename">recipe.html</span>
+      </span>
+      <p>Build a bilingual recipe card with side-by-side EN / UK fields. Practical content-creation use case.</p>
+    </a>
+
+    <a class="card" href="showreel.html">
+      <span class="label">
+        <span class="name">Showreel <span class="badge">auto-play</span></span>
+        <span class="filename">showreel.html</span>
+      </span>
+      <p>Self-playing animated demo, loops indefinitely. Useful as a screen recording source or marketing material.</p>
+    </a>
+
+  </div>
+
+  <h2>Tutorials & docs</h2>
+  <div class="grid">
+
+    <a class="card" href="../userscript/INSTALL.html">
+      <span class="label">
+        <span class="name">Install via Tampermonkey</span>
+        <span class="filename">userscript/INSTALL.html</span>
+      </span>
+      <p>Step-by-step tutorial for installing the userscript on every web page. With screenshots and an embedded demo form.</p>
+    </a>
+
+    <a class="card" href="../website/example/index.html">
+      <span class="label">
+        <span class="name">Embed in your site <span class="badge alt">developer</span></span>
+        <span class="filename">website/example/</span>
+      </span>
+      <p>How to integrate <code>&lt;bilingual-keyboard&gt;</code> directly into your own web page. Working example with politeness diagnostic.</p>
+    </a>
+
+  </div>
+
+  <div class="quick-links">
+    <h3>Reference</h3>
+    <ul>
+      <li><a href="../README.md">README</a></li>
+      <li><a href="../PROJECT.md">PROJECT.md</a> (background)</li>
+      <li><a href="../IMPLEMENTATION.md">IMPLEMENTATION.md</a> (architecture)</li>
+      <li><a href="../TODO.md">TODO.md</a> (Web Store roadmap)</li>
+      <li><a href="../COMPETITORS.md">COMPETITORS.md</a></li>
+      <li><a href="../docs/icons/preview.html">Icon concepts</a></li>
+    </ul>
+  </div>
+</main>
+
+</body>
+</html>

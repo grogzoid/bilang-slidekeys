@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Site — bilang-slidekeys integration</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #0d0d1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+    h1 { color: #7ec8e3; font-size: 26px; margin: 0 0 8px; }
+    h2 { color: #aaa; font-size: 16px; margin: 32px 0 12px; font-weight: 500; }
+    p { line-height: 1.6; color: #ccc; }
+    .form { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+    label { font-size: 14px; color: #888; margin-bottom: 4px; display: block; }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(126, 200, 227, 0.15);
+      color: #7ec8e3;
+      font-size: 12px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+    }
+    code {
+      background: #1a1a2e;
+      color: #7ec8e3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Cascadia Code', monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Ukrainian Pen Pal — Compose</h1>
+<p class="badge">bilang-slidekeys embedded by host page</p>
+
+<p>This is a sample site that has integrated <code>&lt;bilingual-keyboard&gt;</code> directly. Click any input below to start typing — the keyboard slides up from the bottom on demand.</p>
+
+<div class="form">
+  <div>
+    <label for="recipient">To:</label>
+    <input id="recipient" type="text" placeholder="ім'я отримувача...">
+  </div>
+  <div>
+    <label for="subject">Subject:</label>
+    <input id="subject" type="text" placeholder="тема листа...">
+  </div>
+  <div>
+    <label for="body">Message:</label>
+    <textarea id="body" placeholder="Привіт..."></textarea>
+  </div>
+</div>
+
+<h2>Politeness check</h2>
+<p style="font-size:14px;color:#888;">If a userscript or Chrome extension is also installed, it should detect this page's embed and defer. Status:</p>
+<pre style="background:#1a1a2e;padding:12px;border-radius:8px;font-size:13px;color:#aaa;" id="status">(checking...)</pre>
+
+<!-- Embed the bilang-slidekeys component -->
+<bilingual-keyboard active-lang="uk" input-mode="bound" enabled-latin-langs="en"></bilingual-keyboard>
+
+<script type="module">
+  const status = document.getElementById('status');
+
+  // Loud warning if the page was opened via file:// — relative ES module
+  // imports require an http(s) origin in most browsers.
+  if (location.protocol === 'file:') {
+    status.style.color = '#f87171';
+    status.textContent =
+      'ERROR: this page was opened via file:// which blocks ES module imports.\n' +
+      'Serve it via a local HTTP server instead, e.g.\n' +
+      '  python3 -m http.server 8801 --directory /path/to/bilingual-keyboard\n' +
+      'then open http://localhost:8801/website/example/index.html';
+  } else {
+    try {
+      // Path: copy bilingual-keyboard.js + layouts.js to your site, or
+      // load from a CDN once published. Here we go up two levels into
+      // the project's src/ directory for the live demo.
+      await import('../../src/bilingual-keyboard.js');
+    } catch (err) {
+      status.style.color = '#f87171';
+      status.textContent =
+        'IMPORT ERROR: ' + err.message + '\n\n' +
+        'Check that the path ../../src/bilingual-keyboard.js is reachable from ' +
+        location.pathname;
+    }
+
+    // Component code may set the flag synchronously after import resolves,
+    // but a userscript or extension may also be racing — give it a moment.
+    setTimeout(() => {
+      // Don't overwrite an error message we already wrote
+      if (status.style.color === 'rgb(248, 113, 113)') return;
+      const flag = window.__bilangSlidekeys__;
+      const kb = document.querySelector('bilingual-keyboard');
+      const lines = [];
+      lines.push('window.__bilangSlidekeys__ = ' + JSON.stringify(flag, null, 2));
+      lines.push('Element exists in DOM: ' + !!kb);
+      lines.push('Custom element registered: ' + !!customElements.get('bilingual-keyboard'));
+      lines.push('Shadow DOM attached: ' + !!(kb && kb.shadowRoot));
+      status.textContent = lines.join('\n');
+    }, 600);
+  }
+</script>
+
+</body>
+</html>

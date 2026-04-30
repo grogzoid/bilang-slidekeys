@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ukrainian Poetry Typewriter — Заповіт</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0d0d1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 200px;
+      min-height: 100vh;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 42px;
+      font-weight: normal;
+      color: #c8b87c;
+      margin: 0 0 6px;
+      letter-spacing: 2px;
+    }
+
+    .header .author {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 18px;
+      color: #665e47;
+      font-style: italic;
+      margin: 0;
+    }
+
+    .divider {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #444, transparent);
+      margin: 24px auto 36px;
+    }
+
+    .poem-canvas {
+      position: relative;
+      max-width: 640px;
+      width: 100%;
+      line-height: 1.9;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 28px;
+      cursor: text;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 0 8px;
+      outline: none;
+    }
+
+    .poem-canvas:focus {
+      outline: none;
+    }
+
+    .poem-canvas .line {
+      position: relative;
+      display: block;
+      white-space: pre;
+      min-height: 1.9em;
+      transition: opacity 0.2s ease;
+    }
+
+    .poem-canvas .line.active-line {
+      font-size: 30px;
+    }
+
+    .poem-canvas .char-slot {
+      position: relative;
+      display: inline-block;
+    }
+
+    .poem-canvas .ghost {
+      color: #2a2a3a;
+    }
+
+    .poem-canvas .typed {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .poem-canvas .typed.correct {
+      color: #4ade80;
+    }
+
+    .poem-canvas .typed.wrong {
+      color: #f87171;
+    }
+
+    .poem-canvas .cursor-marker {
+      display: inline-block;
+      width: 2px;
+      height: 1.15em;
+      background: #c8b87c;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+      position: absolute;
+      left: 0;
+      top: 0.15em;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .bottom-bar {
+      max-width: 640px;
+      width: 100%;
+      margin-top: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .progress-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: #666;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .progress-bar-track {
+      width: 100%;
+      height: 6px;
+      background: #1a1a2e;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4ade80, #22d3ee);
+      border-radius: 3px;
+      transition: width 0.15s ease;
+      width: 0%;
+    }
+
+    .reset-btn {
+      background: #1e1e2e;
+      border: 1px solid #333;
+      color: #888;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+
+    .reset-btn:hover {
+      border-color: #555;
+      color: #ccc;
+      background: #252540;
+    }
+
+    .congrats-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 13, 26, 0.92);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 32px;
+    }
+
+    .congrats-overlay.visible {
+      display: flex;
+    }
+
+    .congrats-overlay h2 {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 36px;
+      color: #4ade80;
+      margin: 0 0 12px;
+      font-weight: normal;
+    }
+
+    .congrats-overlay .stats {
+      font-size: 20px;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .congrats-overlay .accuracy {
+      font-size: 28px;
+      color: #c8b87c;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      margin-bottom: 32px;
+    }
+
+    .congrats-overlay .restart-btn {
+      background: #1e1e2e;
+      border: 2px solid #4ade80;
+      color: #4ade80;
+      font-size: 16px;
+      padding: 12px 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: background 0.2s;
+    }
+
+    .congrats-overlay .restart-btn:hover {
+      background: #1a3a2a;
+    }
+
+    .hint {
+      text-align: center;
+      color: #444;
+      font-size: 13px;
+      margin-top: 12px;
+      max-width: 640px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+    <div class="header">
+      <h1>Заповіт</h1>
+      <p class="author">Тарас Шевченко</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="poem-canvas" id="poem-canvas" tabindex="0"></div>
+
+    <div class="bottom-bar">
+      <div class="progress-wrap">
+        <div class="progress-text" id="progress-text">0 / 0 characters</div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <button class="reset-btn" id="reset-btn">Reset</button>
+    </div>
+
+    <p class="hint" id="hint-text">Click the poem or start typing. Use the keyboard below or enable Intercept mode for your physical keyboard.</p>
+  </div>
+
+  <div class="congrats-overlay" id="congrats">
+    <h2>Чудово!</h2>
+    <p class="stats" id="congrats-stats"></p>
+    <p class="accuracy" id="congrats-accuracy"></p>
+    <button class="restart-btn" id="restart-btn">Type Again</button>
+  </div>
+
+  <bilingual-keyboard active-lang="uk" visible></bilingual-keyboard>
+
+  <script type="module">
+    import '../src/bilingual-keyboard.js';
+
+    const POEM_TEXT =
+      "Як умру, то поховайте\n" +
+      "Мене на могилі,\n" +
+      "Серед степу широкого,\n" +
+      "На Вкраїні милій,\n" +
+      "Щоб лани широкополі,\n" +
+      "І Дніпро, і кручі\n" +
+      "Було видно, було чутно,\n" +
+      "Як реве ревучий.";
+
+    const canvas = document.getElementById('poem-canvas');
+    const progressText = document.getElementById('progress-text');
+    const progressFill = document.getElementById('progress-fill');
+    const resetBtn = document.getElementById('reset-btn');
+    const congratsEl = document.getElementById('congrats');
+    const congratsStats = document.getElementById('congrats-stats');
+    const congratsAccuracy = document.getElementById('congrats-accuracy');
+    const restartBtn = document.getElementById('restart-btn');
+    const hintText = document.getElementById('hint-text');
+    const kb = document.querySelector('bilingual-keyboard');
+
+    let typed = [];       // array of characters the user typed
+    let correctCount = 0; // running count of correct chars
+    let totalAttempts = 0; // total keystrokes (including corrected ones)
+    let completed = false;
+
+    const poemLines = POEM_TEXT.split('\n');
+    const totalChars = POEM_TEXT.length;
+
+    function getCurrentLine() {
+      // Figure out which line index position `typed.length` falls into
+      let pos = 0;
+      for (let i = 0; i < poemLines.length; i++) {
+        const lineLen = poemLines[i].length;
+        const endOfLine = pos + lineLen; // position of last char in this line
+        if (typed.length <= endOfLine) return i;
+        pos = endOfLine + 1; // +1 for the \n
+      }
+      return poemLines.length - 1;
+    }
+
+    function render() {
+      canvas.innerHTML = '';
+      const currentLineIdx = getCurrentLine();
+      let flatIdx = 0;
+
+      for (let li = 0; li < poemLines.length; li++) {
+        const lineEl = document.createElement('span');
+        lineEl.className = 'line';
+        if (li === currentLineIdx) lineEl.classList.add('active-line');
+
+        const lineText = poemLines[li];
+
+        for (let ci = 0; ci < lineText.length; ci++) {
+          const slot = document.createElement('span');
+          slot.className = 'char-slot';
+
+          const ghostSpan = document.createElement('span');
+          ghostSpan.className = 'ghost';
+          ghostSpan.textContent = lineText[ci];
+          slot.appendChild(ghostSpan);
+
+          if (flatIdx < typed.length) {
+            const typedSpan = document.createElement('span');
+            typedSpan.className = 'typed';
+            typedSpan.textContent = typed[flatIdx];
+            if (typed[flatIdx] === POEM_TEXT[flatIdx]) {
+              typedSpan.classList.add('correct');
+            } else {
+              typedSpan.classList.add('wrong');
+            }
+            slot.appendChild(typedSpan);
+          }
+
+          // cursor
+          if (flatIdx === typed.length && !completed) {
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor-marker';
+            slot.appendChild(cursor);
+          }
+
+          lineEl.appendChild(slot);
+          flatIdx++;
+        }
+
+        canvas.appendChild(lineEl);
+
+        // Handle newline character between lines (except after last line)
+        if (li < poemLines.length - 1) {
+          // The newline is a "virtual" character at flatIdx
+          if (flatIdx < typed.length) {
+            // User has passed this newline position
+            // (it was auto-inserted or typed)
+          }
+          if (flatIdx === typed.length && !completed) {
+            // Cursor is at the newline position — show it at end of current line
+            const nlCursor = document.createElement('span');
+            nlCursor.className = 'char-slot';
+            const cur = document.createElement('span');
+            cur.className = 'cursor-marker';
+            cur.style.position = 'relative';
+            cur.style.display = 'inline-block';
+            nlCursor.appendChild(cur);
+            lineEl.appendChild(nlCursor);
+          }
+          flatIdx++; // skip past the \n in flat indexing
+        }
+      }
+
+      // Update progress
+      const typedCount = typed.length;
+      progressText.textContent = `${typedCount} / ${totalChars} characters`;
+      const pct = totalChars > 0 ? (typedCount / totalChars) * 100 : 0;
+      progressFill.style.width = pct + '%';
+    }
+
+    function addChar(ch) {
+      if (completed) return;
+
+      const pos = typed.length;
+      if (pos >= totalChars) return;
+
+      const expected = POEM_TEXT[pos];
+
+      // Auto-advance newlines: if the expected char is \n, insert it automatically
+      // before processing the user's character
+      if (expected === '\n') {
+        typed.push('\n');
+        totalAttempts++;
+        correctCount++;
+        // Now try to place the user's character at the new position
+        addChar(ch);
+        return;
+      }
+
+      typed.push(ch);
+      totalAttempts++;
+      if (ch === expected) {
+        correctCount++;
+      }
+
+      // Check if just finished on a newline boundary: auto-advance trailing newlines
+      if (typed.length < totalChars && POEM_TEXT[typed.length] === '\n') {
+        typed.push('\n');
+        totalAttempts++;
+        correctCount++;
+      }
+
+      render();
+
+      if (typed.length >= totalChars) {
+        completed = true;
+        showCongrats();
+      }
+    }
+
+    function doBackspace() {
+      if (completed || typed.length === 0) return;
+
+      // If last typed was an auto-inserted newline, remove it too
+      while (typed.length > 0 && typed[typed.length - 1] === '\n' && POEM_TEXT[typed.length - 1] === '\n') {
+        typed.pop();
+      }
+
+      if (typed.length > 0) {
+        typed.pop();
+      }
+
+      render();
+    }
+
+    function showCongrats() {
+      // Calculate accuracy based on final result
+      let finalCorrect = 0;
+      for (let i = 0; i < typed.length; i++) {
+        if (typed[i] === POEM_TEXT[i]) finalCorrect++;
+      }
+      const accuracy = totalChars > 0 ? Math.round((finalCorrect / totalChars) * 100) : 0;
+
+      congratsStats.textContent = `${finalCorrect} / ${totalChars} characters correct`;
+      congratsAccuracy.textContent = `Accuracy: ${accuracy}%`;
+      congratsEl.classList.add('visible');
+    }
+
+    function reset() {
+      typed = [];
+      correctCount = 0;
+      totalAttempts = 0;
+      completed = false;
+      congratsEl.classList.remove('visible');
+      render();
+      resetHiddenInput();
+    }
+
+    // Forward-declared; set up later when hidden input is created
+    let resetHiddenInput = () => {};
+
+    // --- Input handling ---
+    //
+    // Strategy:
+    // - A hidden textarea is used so the bilingual-keyboard component has a
+    //   valid bound target for its _insertChar and _doBackspace methods.
+    // - We do NOT use the key-input event (it would double-count with our
+    //   textarea watcher). Instead we watch the hidden textarea for ALL changes.
+    // - Physical keyboard input (LiveType off): captured via keydown on document.
+    // - Physical keyboard input (LiveType on): the component intercepts mapped
+    //   keys and writes to the hidden textarea; we detect that via the input event.
+    //   Backspace and Enter pass through the component, so we catch them in keydown.
+
+    const hiddenInput = document.createElement('textarea');
+    hiddenInput.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;width:1px;height:1px;';
+    hiddenInput.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(hiddenInput);
+
+    function focusHidden() {
+      hiddenInput.focus({ preventScroll: true });
+    }
+
+    canvas.addEventListener('click', focusHidden);
+    canvas.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      focusHidden();
+    });
+
+    // Track hidden textarea to detect virtual keyboard char insertions and backspace
+    let lastLen = 0;
+
+    hiddenInput.addEventListener('input', () => {
+      const val = hiddenInput.value;
+      const newLen = val.length;
+
+      if (newLen > lastLen) {
+        // Characters were added (virtual keyboard insert or LiveType remap)
+        const added = val.slice(lastLen);
+        for (const ch of added) {
+          if (ch === '\n') {
+            // Newlines are auto-inserted in our poem logic; ignore explicit ones
+          } else {
+            addChar(ch);
+          }
+        }
+      } else if (newLen < lastLen) {
+        // Backspace from virtual keyboard
+        doBackspace();
+      }
+
+      lastLen = newLen;
+
+      // Periodically trim the hidden textarea so it doesn't grow forever
+      if (newLen > 200) {
+        hiddenInput.value = '';
+        lastLen = 0;
+      }
+    });
+
+    resetHiddenInput = () => {
+      hiddenInput.value = '';
+      lastLen = 0;
+      hiddenInput.focus({ preventScroll: true });
+    };
+
+    // Physical keyboard handler
+    document.addEventListener('keydown', (e) => {
+      // Always allow reset on Enter when completed
+      if (completed && e.key === 'Enter') {
+        e.preventDefault();
+        reset();
+        return;
+      }
+      if (completed) return;
+
+      const isActive = document.activeElement === hiddenInput || document.activeElement === canvas;
+
+      if (e.key === 'Backspace') {
+        if (kb.inputMode === 'live-type' || isActive) {
+          e.preventDefault();
+          doBackspace();
+        }
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        if (kb.inputMode === 'live-type' || isActive) {
+          e.preventDefault();
+          // Newlines are auto-inserted; do nothing
+        }
+        return;
+      }
+
+      // In LiveType mode, the component handles mapped keys and writes to
+      // hiddenInput. Our input event handler picks that up. So do nothing here
+      // for printable chars in LiveType mode.
+      if (kb.inputMode === 'live-type') return;
+
+      // LiveType off: if hidden input or canvas is focused, handle printable chars
+      if (isActive && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+        addChar(e.key);
+      }
+    });
+
+    resetBtn.addEventListener('click', reset);
+    restartBtn.addEventListener('click', reset);
+
+    // Initial render
+    render();
+
+    // Focus hidden on page load so the keyboard binds to it
+    setTimeout(focusHidden, 100);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>bilang-slidekeys — icon concepts</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #0d0d1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    h1 {
+      color: #7ec8e3;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 8px;
+    }
+    .subtitle {
+      color: #888;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    .concept {
+      background: #16162a;
+      border: 1px solid #2a2a3e;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+    .name {
+      min-width: 200px;
+    }
+    .name h3 {
+      color: #7ec8e3;
+      font-size: 18px;
+      margin: 0 0 6px;
+      font-weight: 600;
+    }
+    .name p {
+      color: #aaa;
+      font-size: 13px;
+      margin: 0;
+      line-height: 1.5;
+    }
+    .sizes {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .size {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .size .lbl {
+      font-size: 11px;
+      color: #666;
+      letter-spacing: 0.5px;
+    }
+    .size img {
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+    }
+    .toolbar-mock {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #2a2a3e;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #444;
+    }
+    .toolbar-mock .toolbar-icon {
+      width: 24px;
+      height: 24px;
+    }
+    .toolbar-mock span {
+      font-size: 11px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+<h1>bilang-slidekeys — icon concepts</h1>
+<p class="subtitle">Three SVG concepts at 128, 48, 32, 16 px (Chrome Web Store needs PNG export at these sizes). Toolbar mock shows what the icon looks like next to other browser extensions.</p>
+
+<!-- Concept 1: Keycap -->
+<div class="concept">
+  <div class="name">
+    <h3>1. Keycap</h3>
+    <p>A single keycap with Ф large and A in the corner. Mirrors the actual product's bilingual key style. Most direct visual link to what the product does.</p>
+  </div>
+  <div class="sizes">
+    <div class="size"><img src="icon-keycap.svg" width="128" height="128" alt="128"><div class="lbl">128 px</div></div>
+    <div class="size"><img src="icon-keycap.svg" width="48" height="48" alt="48"><div class="lbl">48 px</div></div>
+    <div class="size"><img src="icon-keycap.svg" width="32" height="32" alt="32"><div class="lbl">32 px</div></div>
+    <div class="size"><img src="icon-keycap.svg" width="16" height="16" alt="16"><div class="lbl">16 px</div></div>
+    <div class="toolbar-mock">
+      <img src="icon-keycap.svg" class="toolbar-icon" alt="">
+      <span>← in toolbar</span>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 2: Toggle -->
+<div class="concept">
+  <div class="name">
+    <h3>2. Toggle</h3>
+    <p>Two overlapping keycaps — English A behind, Ukrainian Ф in front. Communicates the bilingual switching/swapping aspect. Slightly busier; more visual energy.</p>
+  </div>
+  <div class="sizes">
+    <div class="size"><img src="icon-toggle.svg" width="128" height="128" alt="128"><div class="lbl">128 px</div></div>
+    <div class="size"><img src="icon-toggle.svg" width="48" height="48" alt="48"><div class="lbl">48 px</div></div>
+    <div class="size"><img src="icon-toggle.svg" width="32" height="32" alt="32"><div class="lbl">32 px</div></div>
+    <div class="size"><img src="icon-toggle.svg" width="16" height="16" alt="16"><div class="lbl">16 px</div></div>
+    <div class="toolbar-mock">
+      <img src="icon-toggle.svg" class="toolbar-icon" alt="">
+      <span>← in toolbar</span>
+    </div>
+  </div>
+</div>
+
+<!-- Concept 3: Globe -->
+<div class="concept">
+  <div class="name">
+    <h3>3. Globe + Key</h3>
+    <p>A stylized globe (latitude/longitude lines) with a keycap overlay showing Ф. Universal "international input" symbol with the bilingual specific. Most abstract.</p>
+  </div>
+  <div class="sizes">
+    <div class="size"><img src="icon-globe.svg" width="128" height="128" alt="128"><div class="lbl">128 px</div></div>
+    <div class="size"><img src="icon-globe.svg" width="48" height="48" alt="48"><div class="lbl">48 px</div></div>
+    <div class="size"><img src="icon-globe.svg" width="32" height="32" alt="32"><div class="lbl">32 px</div></div>
+    <div class="size"><img src="icon-globe.svg" width="16" height="16" alt="16"><div class="lbl">16 px</div></div>
+    <div class="toolbar-mock">
+      <img src="icon-globe.svg" class="toolbar-icon" alt="">
+      <span>← in toolbar</span>
+    </div>
+  </div>
+</div>
+
+<p style="color:#666;font-size:12px;margin-top:32px;">
+  At 16 px, sweat the detail loss test. The smallest size is the real test of an icon — most users see the toolbar version, not the store listing version.
+</p>
+
+</body>
+</html>

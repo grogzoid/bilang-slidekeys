@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Userscript Live Demo</title>
+  <style>
+    body { background:#0d0d1a; color:#eee; font-family:sans-serif; padding:32px; max-width:800px; margin:0 auto; }
+    h1 { color:#7ec8e3; }
+    p { line-height: 1.6; }
+    input, textarea { width:100%; padding:12px; font-size:18px; background:#1a1a2e; color:#eee; border:1px solid #555; border-radius:8px; box-sizing:border-box; margin-bottom:16px; }
+    textarea { min-height: 100px; }
+    .hint { color:#888; font-size:14px; margin-top:8px; }
+    .arrow { font-size:60px; position:fixed; bottom:90px; right:30px; color:#7ec8e3; pointer-events:none; animation: bounce 1s infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  </style>
+</head>
+<body>
+<h1>bilang-slidekeys — userscript demo</h1>
+<p>This page simulates what you'd see on any web page after the Tampermonkey userscript loads. The floating keyboard button should appear in the bottom-right corner.</p>
+
+<p>Try it:</p>
+<ol>
+  <li>Click the input below</li>
+  <li>Click the floating ⌨️ button to summon the keyboard</li>
+  <li>Or press <strong>Ctrl+Shift+K</strong></li>
+</ol>
+
+<input type="text" placeholder="Click me, then click the keyboard button →">
+<textarea placeholder="Or type into this textarea..."></textarea>
+
+<p class="hint">Excluded sites won't get the keyboard. Everywhere else, it's available.</p>
+
+<div class="arrow">↘</div>
+
+<script>
+  const s = document.createElement('script');
+  s.src = '/userscript/bilang-slidekeys.user.js?_=' + Date.now();
+  document.body.appendChild(s);
+</script>
+</body>
+</html>
