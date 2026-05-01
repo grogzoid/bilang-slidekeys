@@ -119,8 +119,8 @@ This model:
 ## Listing assets for Web Store submission
 
 - [ ] **At least one screenshot** at 1280×800 OR 640×400 (you can show up to 5)
-  - The existing screenshots in `docs/screenshots/` (keyboard-normal.png, intercept-mode.png, demo-page.png, quiz-with-keyboard.png) are good starting points but may need recropping/resizing to exact dimensions
-  - Suggested screenshots: (1) keyboard open on a generic page, (2) intercept mode with diagonal split, (3) quiz page in action, (4) the floating button being dragged
+  - The existing screenshots in `docs/screenshots/` (keyboard-normal.png, intercept-mode.png, demo-page.png, quiz-with-keyboard.png) and `userscript/screenshots/` are good starting points but may need recropping/resizing to exact dimensions
+  - Suggested screenshots: (1) keyboard open on a generic page, (2) LiveType mode with diagonal-split keys (the file is named intercept-mode.png for legacy reasons), (3) quiz page in action, (4) the keyboard popped out into a Picture-in-Picture window, (5) the floating button being dragged
 - [ ] **Promotional tile** (440×280) — optional but boosts visibility
 - [ ] **Marquee** (1400×560) — optional, for featured sections
 - [ ] **Short description** (132 chars max). Suggestion:

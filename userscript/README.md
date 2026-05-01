@@ -46,4 +46,4 @@ Tampermonkey injects the script into matching pages. The script:
 3. The floating toggle button appears; the keyboard stays hidden until summoned.
 4. Adds a `Ctrl+Shift+K` hotkey listener.
 
-No special permissions required — the script declares `@grant none`. Shadow DOM ensures the keyboard's styles never conflict with page styles.
+The script declares `@grant GM_registerMenuCommand GM_setValue GM_getValue` — these are required for the Tampermonkey menu commands ("Toggle keyboard here", "Always enable on [hostname]") and persistent per-site enable settings. No network/storage access beyond `localStorage` for the floating button position. Shadow DOM ensures the keyboard's styles never conflict with page styles.
