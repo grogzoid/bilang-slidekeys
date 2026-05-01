@@ -149,6 +149,12 @@ const STYLES = `
     background: rgba(255, 255, 255, 0.06);
   }
 
+  /* Hide the pop-out button while the panel is itself living in a PiP
+     window — popping out from a popped-out window makes no sense. */
+  .kb-panel.pip .kb-popout-btn {
+    display: none;
+  }
+
   /* Override panel positioning when it lives in a Picture-in-Picture window */
   .kb-panel.pip {
     position: static;

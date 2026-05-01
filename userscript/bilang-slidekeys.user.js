@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilang SlideKeys
 // @namespace    https://github.com/grogzoid/bilang-slidekeys
-// @version      0.3.8
+// @version      0.3.9
 // @description  Bilingual EN/UK on-screen keyboard available on every web page
 // @author       grogzoid
 // @match        *://*/*
@@ -39,7 +39,7 @@
     return;
   }
   // Mark this script as the active source.
-  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.8', registered: false };
+  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.9', registered: false };
 
 // Bilingual keyboard key mappings: EN (QWERTY) <-> UK (Ukrainian Windows layout)
 // Each key object maps a physical key position to both language outputs.
@@ -253,6 +253,12 @@ const STYLES = `
   .kb-popout-btn:hover {
     color: var(--key-text);
     background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Hide the pop-out button while the panel is itself living in a PiP
+     window — popping out from a popped-out window makes no sense. */
+  .kb-panel.pip .kb-popout-btn {
+    display: none;
   }
 
   /* Override panel positioning when it lives in a Picture-in-Picture window */
