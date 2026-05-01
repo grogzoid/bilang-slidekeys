@@ -842,38 +842,79 @@ class BilingualKeyboard extends HTMLElement {
       });
       this._pipWindow = pip;
 
-      // Copy the shadow DOM's <style> tags into the PiP window so the
-      // keyboard renders with the right CSS in its new home.
+      // Copy the shadow DOM's <style> tags into the PiP window. Shadow-DOM
+      // :host selectors don't apply outside a shadow root, so transform
+      // ":host" -> ".kb-panel.pip" so the CSS variables and the styles
+      // gated by host attributes (input-mode, live-type-keys) still match.
       const styles = this._shadow.querySelectorAll('style');
       for (const s of styles) {
         const clone = pip.document.createElement('style');
-        clone.textContent = s.textContent;
+        clone.textContent = s.textContent.replace(/:host(\([^)]*\))?/g, (m, args) => {
+          return args ? `.kb-panel.pip${args}` : '.kb-panel.pip';
+        });
         pip.document.head.appendChild(clone);
       }
       pip.document.body.style.margin = '0';
       pip.document.body.style.background = '#16162a';
 
-      // Move the panel; the .pip class overrides the fixed-bottom positioning.
+      // Mirror the host element's attributes onto the panel so the
+      // attribute-gated style rules (e.g. [input-mode="live-type"]) match.
+      this._mirrorHostAttrsToPanel();
+
+      // Move the panel; the .pip class overrides fixed-bottom positioning.
       this._panel.classList.add('pip');
       pip.document.body.appendChild(this._panel);
 
-      // Hide the floating ⌨️ button while popped out — the PiP window IS the keyboard.
+      // Free up the body's reserved space (it was sized for the inline panel).
+      this._clearBodyPadding();
+
+      // Hide the floating ⌨️ button while popped out — the PiP IS the keyboard.
       this._toggleWrap.style.display = 'none';
 
-      // When the user closes the PiP window (or the browser closes it for any
-      // reason), put the panel back where it came from.
+      // Listen for physical keydown on the PiP window's document too — the
+      // LiveType handler is otherwise registered only on the main document.
+      pip.document.addEventListener('keydown', this._onLiveTypeKeydown, true);
+      pip.document.addEventListener('keydown', this._onModifierKeydown, true);
+      pip.document.addEventListener('keyup', this._onModifierKeyup, true);
+
+      // When the PiP window closes (browser × or our internal × button via
+      // pip.close()), put the panel back where it came from.
       pip.addEventListener('pagehide', () => this._restoreFromPip(), { once: true });
     } catch (err) {
       console.error('[bilang-slidekeys] pop-out failed:', err);
     }
   }
 
+  _mirrorHostAttrsToPanel() {
+    const attrs = ['active-lang', 'input-mode', 'latin-lang', 'live-type-keys'];
+    for (const a of attrs) {
+      const v = this.getAttribute(a);
+      if (v !== null) this._panel.setAttribute(a, v);
+      else this._panel.removeAttribute(a);
+    }
+  }
+
   _restoreFromPip() {
     if (!this._pipWindow) return;
+    try {
+      this._pipWindow.document.removeEventListener('keydown', this._onLiveTypeKeydown, true);
+      this._pipWindow.document.removeEventListener('keydown', this._onModifierKeydown, true);
+      this._pipWindow.document.removeEventListener('keyup', this._onModifierKeyup, true);
+    } catch (_) {}
     this._panel.classList.remove('pip');
+    // Strip the mirrored attributes — they're back inside the host's shadow.
+    for (const a of ['active-lang', 'input-mode', 'latin-lang', 'live-type-keys']) {
+      this._panel.removeAttribute(a);
+    }
     this._shadow.appendChild(this._panel);
     this._toggleWrap.style.display = '';
     this._pipWindow = null;
+    // Re-apply body padding if the panel is still meant to be visible inline.
+    if (this.visible) {
+      requestAnimationFrame(() => {
+        this._updatePanelHeight();
+      });
+    }
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
@@ -883,6 +924,12 @@ class BilingualKeyboard extends HTMLElement {
     }
     if (name === 'active-lang' || name === 'input-mode' || name === 'latin-lang' || name === 'live-type-keys') {
       this._render();
+      // While popped out, the panel needs the same attribute on itself so
+      // attribute-gated CSS rules (transformed from :host) keep matching.
+      if (this._pipWindow && this._panel) {
+        if (newVal === null || newVal === undefined) this._panel.removeAttribute(name);
+        else this._panel.setAttribute(name, newVal);
+      }
     }
     if (name === 'latin-lang' || name === 'enabled-latin-langs') {
       this._updateGlobeButton();
