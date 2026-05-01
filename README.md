@@ -4,6 +4,12 @@ A bilingual on-screen keyboard for typing English and Ukrainian (and German, Spa
 
 Built as a zero-dependency web component with Shadow DOM. Distributed as a userscript (Tampermonkey) today; Chrome Web Store extension coming. Works in any framework or plain HTML.
 
+## Demo
+
+https://github.com/grogzoid/bilang-slidekeys/raw/main/docs/videos/livetype-demo.mp4
+
+A short clip of LiveType: typing on a physical QWERTY keyboard produces Ukrainian via the standard ЙЦУКЕН mapping. Source: [`docs/videos/livetype-demo.mp4`](docs/videos/livetype-demo.mp4).
+
 ## Screenshots
 
 ### Normal mode — Ukrainian active, English in corner

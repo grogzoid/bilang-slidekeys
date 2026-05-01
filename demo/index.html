@@ -45,6 +45,26 @@
       margin: 0 0 12px;
       max-width: 680px;
     }
+    .demo-video {
+      margin: 24px 0 40px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+    .demo-video video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .demo-video .caption {
+      margin: 0;
+      padding: 12px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--card);
+      border-top: 1px solid var(--border);
+    }
     .repo-link {
       display: inline-block;
       color: var(--muted);
@@ -172,6 +192,11 @@
   <h1>bilang-slidekeys</h1>
   <p class="lede">A bilingual on-screen keyboard for English / Ukrainian (and German, Spanish, French, Italian). Live demos below.</p>
   <a class="repo-link" href="https://github.com/grogzoid/bilang-slidekeys">github.com/grogzoid/bilang-slidekeys ↗</a>
+
+  <div class="demo-video">
+    <video src="../docs/videos/livetype-demo.mp4" autoplay muted loop playsinline preload="metadata"></video>
+    <p class="caption">LiveType in action — typing on a physical QWERTY keyboard produces Ukrainian via the standard ЙЦУКЕН mapping.</p>
+  </div>
 
   <h2>Interactive demos</h2>
   <div class="grid">
