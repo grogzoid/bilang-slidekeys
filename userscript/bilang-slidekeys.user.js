@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilang SlideKeys
 // @namespace    https://github.com/grogzoid/bilang-slidekeys
-// @version      0.3.2
+// @version      0.3.3
 // @description  Bilingual EN/UK on-screen keyboard available on every web page
 // @author       grogzoid
 // @match        *://*/*
@@ -39,7 +39,7 @@
     return;
   }
   // Mark this script as the active source.
-  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.2', registered: false };
+  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.3', registered: false };
 
 // Bilingual keyboard key mappings: EN (QWERTY) <-> UK (Ukrainian Windows layout)
 // Each key object maps a physical key position to both language outputs.
@@ -223,6 +223,52 @@ const STYLES = `
   .kb-close-btn:hover {
     color: var(--key-text);
     background: rgba(255, 255, 255, 0.06);
+  }
+
+  .kb-popout-btn {
+    position: absolute;
+    top: 8px;
+    right: 50px;
+    z-index: 3;
+    background: transparent;
+    border: none;
+    color: var(--key-inactive-color);
+    font-size: 16px;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .kb-popout-btn.available {
+    display: flex;
+  }
+
+  .kb-popout-btn:hover {
+    color: var(--key-text);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  /* Override panel positioning when it lives in a Picture-in-Picture window */
+  .kb-panel.pip {
+    position: static;
+    transform: none;
+    box-shadow: none;
+    border-top: none;
+    padding: 24px 12px 12px;
+  }
+
+  .kb-panel.pip::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
   }
 
   .kb-panel {
@@ -655,8 +701,24 @@ class BilingualKeyboard extends HTMLElement {
     this._closeBtn.className = 'kb-close-btn';
     this._closeBtn.textContent = '×';
     this._closeBtn.setAttribute('aria-label', 'Close keyboard');
-    this._closeBtn.addEventListener('click', () => { this.visible = false; });
+    this._closeBtn.addEventListener('click', () => {
+      this.visible = false;
+      if (this._pipWindow) this._pipWindow.close();
+    });
     this._panel.appendChild(this._closeBtn);
+
+    // Pop-out button — appears only if Document Picture-in-Picture API is available
+    this._popoutBtn = document.createElement('button');
+    this._popoutBtn.className = 'kb-popout-btn';
+    this._popoutBtn.textContent = '⧉';
+    this._popoutBtn.setAttribute('aria-label', 'Pop out keyboard to a separate window');
+    this._popoutBtn.title = 'Pop out keyboard to a separate window';
+    if (typeof window !== 'undefined' && 'documentPictureInPicture' in window) {
+      this._popoutBtn.classList.add('available');
+    }
+    this._popoutBtn.addEventListener('click', () => this._popOut());
+    this._panel.appendChild(this._popoutBtn);
+    this._pipWindow = null;
 
     // LiveType toggle button (pinned to left of panel)
     this._liveTypeBtn = document.createElement('button');
@@ -867,6 +929,57 @@ class BilingualKeyboard extends HTMLElement {
     t.style.outlineOffset = t._prevOutlineOffset || '';
     delete t._prevOutline;
     delete t._prevOutlineOffset;
+  }
+
+  /* ─── Document Picture-in-Picture pop-out ───
+   * Move the keyboard panel into an OS-level always-on-top mini-window
+   * so it doesn't compete with sites that have internal scroll containers
+   * (WhatsApp Web, Slack, Discord, etc.). Event listeners stay on the
+   * main page's document, so typing routes correctly regardless of where
+   * the panel lives visually. PiP windows share the JS runtime with the
+   * opener, so DOM moves are direct (no postMessage needed). */
+  async _popOut() {
+    if (!('documentPictureInPicture' in window)) return;
+    if (this._pipWindow) return;
+    try {
+      const pip = await window.documentPictureInPicture.requestWindow({
+        width: 920,
+        height: 360,
+      });
+      this._pipWindow = pip;
+
+      // Copy the shadow DOM's <style> tags into the PiP window so the
+      // keyboard renders with the right CSS in its new home.
+      const styles = this._shadow.querySelectorAll('style');
+      for (const s of styles) {
+        const clone = pip.document.createElement('style');
+        clone.textContent = s.textContent;
+        pip.document.head.appendChild(clone);
+      }
+      pip.document.body.style.margin = '0';
+      pip.document.body.style.background = '#16162a';
+
+      // Move the panel; the .pip class overrides the fixed-bottom positioning.
+      this._panel.classList.add('pip');
+      pip.document.body.appendChild(this._panel);
+
+      // Hide the floating ⌨️ button while popped out — the PiP window IS the keyboard.
+      this._toggleWrap.style.display = 'none';
+
+      // When the user closes the PiP window (or the browser closes it for any
+      // reason), put the panel back where it came from.
+      pip.addEventListener('pagehide', () => this._restoreFromPip(), { once: true });
+    } catch (err) {
+      console.error('[bilang-slidekeys] pop-out failed:', err);
+    }
+  }
+
+  _restoreFromPip() {
+    if (!this._pipWindow) return;
+    this._panel.classList.remove('pip');
+    this._shadow.appendChild(this._panel);
+    this._toggleWrap.style.display = '';
+    this._pipWindow = null;
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
