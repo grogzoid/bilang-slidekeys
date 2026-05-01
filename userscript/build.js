@@ -25,7 +25,7 @@ try {
 } catch (_) {
   // tag missing or git unavailable — keep "0" (yields 0.2.0)
 }
-const VERSION = `0.2.${commitsSinceTag}`;
+const VERSION = `0.3.${commitsSinceTag}`;
 
 // Strip the import statement from component
 const componentBody = component
