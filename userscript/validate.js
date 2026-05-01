@@ -81,6 +81,7 @@ const fakeWindow = {
   Event: class Event { constructor(type) { this.type = type; } },
 };
 fakeWindow.window = fakeWindow;
+fakeWindow.self = fakeWindow;
 fakeWindow.globalThis = fakeWindow;
 
 const fakeDocument = {

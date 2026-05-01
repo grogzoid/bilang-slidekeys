@@ -199,39 +199,24 @@ const bundle = `${header}
   'use strict';
 
   // Tampermonkey runs scripts that declare any @grant in a sandbox where
-  // 'window' is a wrapper, not the host page's window. Use unsafeWindow
-  // (which Tampermonkey exposes for exactly this purpose) so that DOM
-  // mutations and the politeness flag land on the real page's window —
-  // visible to host-page scripts and other userscripts/extensions.
-  // Fall back through a chain of well-known globals if unsafeWindow is
-  // missing for any reason (e.g. an unusual sandbox or @grant=none).
-  let window;
-  if (typeof unsafeWindow !== 'undefined') {
-    window = unsafeWindow;
-  } else if (typeof globalThis !== 'undefined' && globalThis.window) {
-    window = globalThis.window;
-  } else if (typeof self !== 'undefined' && self.window) {
-    window = self.window;
-  } else if (typeof globalThis !== 'undefined') {
-    window = globalThis;
-  } else {
-    // Last resort. (0, eval)('this') returns the current global in any JS env.
-    window = (0, eval)('this');
-  }
-  const document = window.document;
-  const customElements = window.customElements;
-  const HTMLElement = window.HTMLElement;
-  const localStorage = window.localStorage;
-  const navigator = window.navigator;
-  const location = window.location;
+  // \`window\` is a wrapper, not the host page's window. unsafeWindow
+  // (TM-only) gives us a direct reference to the real one. Fall back to
+  // \`self\` (defined in all browsers since forever, ES5) when unsafeWindow
+  // is missing — that path is for non-Tampermonkey contexts.
+  // We avoid \`globalThis\` because Tampermonkey's userscript editor uses
+  // an old ESLint config that flags it as an undefined identifier.
+  // eslint-disable-next-line no-redeclare
+  var window = (typeof unsafeWindow !== 'undefined') ? unsafeWindow : self;
+  var document = window.document;
+  var customElements = window.customElements;
+  var HTMLElement = window.HTMLElement;
+  var localStorage = window.localStorage;
+  var navigator = window.navigator;
+  var location = window.location;
 
   // Politeness check: if a host page (or another userscript/extension) has
   // already registered <bilingual-keyboard> or set the source flag, defer.
-  // The host page's instance takes precedence — we don't inject anything.
-  if (
-    customElements.get('bilingual-keyboard') ||
-    window.__bilangSlidekeys__
-  ) {
+  if (customElements.get('bilingual-keyboard') || window.__bilangSlidekeys__) {
     return;
   }
   // Mark this script as the active source.
