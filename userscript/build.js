@@ -246,3 +246,17 @@ ${launcher}
 
 writeFileSync(resolve(__dirname, 'bilang-slidekeys.user.js'), bundle);
 console.log('Wrote userscript/bilang-slidekeys.user.js (' + bundle.length + ' bytes)');
+
+// Validate the bundle as part of the build. Catches missing globals,
+// wrong fallback paths, and other runtime errors that node --check misses.
+// Skip with `BILANG_SKIP_VALIDATE=1 node build.js` if you really need to.
+if (!process.env.BILANG_SKIP_VALIDATE) {
+  const { spawnSync } = await import('node:child_process');
+  const result = spawnSync(process.execPath, [resolve(__dirname, 'validate.js')], {
+    stdio: 'inherit',
+  });
+  if (result.status !== 0) {
+    console.error('\nbuild.js: validation failed — bundle is on disk but DO NOT commit it.');
+    process.exit(result.status || 1);
+  }
+}

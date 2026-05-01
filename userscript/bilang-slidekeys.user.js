@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilang SlideKeys
 // @namespace    https://github.com/grogzoid/bilang-slidekeys
-// @version      0.3.4
+// @version      0.3.5
 // @description  Bilingual EN/UK on-screen keyboard available on every web page
 // @author       grogzoid
 // @match        *://*/*
@@ -54,7 +54,7 @@
     return;
   }
   // Mark this script as the active source.
-  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.4', registered: false };
+  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.5', registered: false };
 
 // Bilingual keyboard key mappings: EN (QWERTY) <-> UK (Ukrainian Windows layout)
 // Each key object maps a physical key position to both language outputs.
