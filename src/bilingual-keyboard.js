@@ -849,8 +849,15 @@ class BilingualKeyboard extends HTMLElement {
       const styles = this._shadow.querySelectorAll('style');
       for (const s of styles) {
         const clone = pip.document.createElement('style');
+        // Transform shadow-DOM selectors:
+        //   ":host"          -> ".kb-panel.pip"
+        //   ":host([attr])"  -> ".kb-panel.pip[attr]"  (strip the parens)
+        // The naive replacement using args as-is would yield
+        // ".kb-panel.pip([attr])" which is invalid CSS.
         clone.textContent = s.textContent.replace(/:host(\([^)]*\))?/g, (m, args) => {
-          return args ? `.kb-panel.pip${args}` : '.kb-panel.pip';
+          if (!args) return '.kb-panel.pip';
+          const inner = args.slice(1, -1); // strip leading "(" and trailing ")"
+          return `.kb-panel.pip${inner}`;
         });
         pip.document.head.appendChild(clone);
       }

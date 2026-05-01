@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bilang SlideKeys
 // @namespace    https://github.com/grogzoid/bilang-slidekeys
-// @version      0.3.6
+// @version      0.3.7
 // @description  Bilingual EN/UK on-screen keyboard available on every web page
 // @author       grogzoid
 // @match        *://*/*
@@ -54,7 +54,7 @@
     return;
   }
   // Mark this script as the active source.
-  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.6', registered: false };
+  window.__bilangSlidekeys__ = { source: 'userscript', version: '0.3.7', registered: false };
 
 // Bilingual keyboard key mappings: EN (QWERTY) <-> UK (Ukrainian Windows layout)
 // Each key object maps a physical key position to both language outputs.
@@ -970,8 +970,15 @@ class BilingualKeyboard extends HTMLElement {
       const styles = this._shadow.querySelectorAll('style');
       for (const s of styles) {
         const clone = pip.document.createElement('style');
+        // Transform shadow-DOM selectors:
+        //   ":host"          -> ".kb-panel.pip"
+        //   ":host([attr])"  -> ".kb-panel.pip[attr]"  (strip the parens)
+        // The naive replacement using args as-is would yield
+        // ".kb-panel.pip([attr])" which is invalid CSS.
         clone.textContent = s.textContent.replace(/:host(\([^)]*\))?/g, (m, args) => {
-          return args ? `.kb-panel.pip${args}` : '.kb-panel.pip';
+          if (!args) return '.kb-panel.pip';
+          const inner = args.slice(1, -1); // strip leading "(" and trailing ")"
+          return `.kb-panel.pip${inner}`;
         });
         pip.document.head.appendChild(clone);
       }
