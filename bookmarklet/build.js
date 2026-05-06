@@ -37,23 +37,18 @@ const layoutsBody = layouts.replace(/^export\s+const\s+keymap/m, 'const keymap')
 const launcher = `
 /* ─── Bookmarklet launcher ─── */
 (function bilangBookmarkletLauncher() {
-  // Check politeness flag — defer to a host-page embed or a userscript /
-  // extension that already injected.
-  if (window.__bilangSlidekeys__) {
-    // Already present. Toggle the keyboard panel's visibility instead of
-    // re-injecting; that way clicking the bookmarklet on a page where the
-    // keyboard is already loaded just shows/hides it.
-    const existing = document.querySelector('bilingual-keyboard');
-    if (existing) {
-      if (existing.hasAttribute('visible')) existing.removeAttribute('visible');
-      else existing.setAttribute('visible', '');
-    }
+  // If the keyboard is already in the DOM, toggle visibility instead of
+  // injecting another instance. (Note: we check the DOM, not the flag,
+  // because the component's own customElements.define block also sets the
+  // flag — checking the flag would short-circuit on first run.)
+  const existing = document.querySelector('bilingual-keyboard');
+  if (existing) {
+    if (existing.hasAttribute('visible')) existing.removeAttribute('visible');
+    else existing.setAttribute('visible', '');
     return;
   }
 
-  window.__bilangSlidekeys__ = { source: 'bookmarklet', version: 'BUILD_VERSION', registered: false };
-
-  // Define the custom element and inject an instance.
+  // Inject a new instance.
   function inject() {
     if (!document.body) {
       document.addEventListener('DOMContentLoaded', inject, { once: true });
@@ -105,3 +100,45 @@ ${finalLauncher}
 
 writeFileSync(resolve(__dirname, 'bilang-slidekeys.bookmarklet.js'), bundle);
 console.log('Wrote bookmarklet/bilang-slidekeys.bookmarklet.js (' + bundle.length + ' bytes)');
+
+// Now produce the inlined bookmarklet URL. We minify with terser, then
+// URL-encode and write to bookmarklet/bookmarklet.url. The INSTALL.html
+// embeds this as the href so the bookmarklet is fully self-contained
+// (works on sites with strict CSP that block third-party script loads).
+import { execSync } from 'node:child_process';
+const tmpPath = resolve(__dirname, 'bilang-slidekeys.bookmarklet.js');
+const minified = execSync(`npx --yes terser "${tmpPath}" --compress --mangle`, {
+  encoding: 'utf8',
+}).trim();
+console.log('Minified to ' + minified.length + ' bytes');
+
+// Wrap in javascript: prefix and percent-encode characters that would
+// terminate the URL or break the href attribute.
+const bookmarkletUrl = 'javascript:' + encodeURIComponent(minified);
+writeFileSync(resolve(__dirname, 'bookmarklet.url'), bookmarkletUrl);
+console.log('Wrote bookmarklet/bookmarklet.url (' + bookmarkletUrl.length + ' chars)');
+
+// Also write a small JSON file with metadata the install page can read
+// at runtime to avoid duplicating the URL between build.js and HTML.
+writeFileSync(resolve(__dirname, 'bookmarklet.meta.json'), JSON.stringify({
+  url_first_chars: bookmarkletUrl.slice(0, 80) + '...',
+  minified_bytes: minified.length,
+  encoded_bytes: bookmarkletUrl.length,
+  built_at: new Date().toISOString(),
+}, null, 2));
+
+// Splice the bookmarklet URL into INSTALL.html. The template uses the
+// marker BOOKMARKLET_HREF — replace it with the actual URL.
+const installPath = resolve(__dirname, 'INSTALL.html');
+const installHtml = readFileSync(installPath, 'utf8');
+// Match an existing href on the .bookmarklet anchor and replace it.
+const updated = installHtml.replace(
+  /(<a class="bookmarklet" href=")[^"]*(")/,
+  (m, pre, post) => pre + bookmarkletUrl.replace(/"/g, '&quot;') + post
+);
+if (updated === installHtml) {
+  console.warn('WARN: did not splice bookmarklet URL into INSTALL.html (anchor not found?)');
+} else {
+  writeFileSync(installPath, updated);
+  console.log('Updated INSTALL.html with the inlined bookmarklet URL');
+}

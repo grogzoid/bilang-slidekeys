@@ -1,6 +1,6 @@
 /* bilang-slidekeys bookmarklet bundle
  * Source: https://github.com/grogzoid/bilang-slidekeys
- * Generated: 2026-05-06T05:37:23.101Z
+ * Generated: 2026-05-06T06:16:36.378Z
  *
  * Loaded by the bookmarklet at bookmarklet/INSTALL.html — defines the
  * <bilingual-keyboard> custom element and injects an instance into the
@@ -1467,23 +1467,18 @@ if (!customElements.get('bilingual-keyboard')) {
 
 /* ─── Bookmarklet launcher ─── */
 (function bilangBookmarkletLauncher() {
-  // Check politeness flag — defer to a host-page embed or a userscript /
-  // extension that already injected.
-  if (window.__bilangSlidekeys__) {
-    // Already present. Toggle the keyboard panel's visibility instead of
-    // re-injecting; that way clicking the bookmarklet on a page where the
-    // keyboard is already loaded just shows/hides it.
-    const existing = document.querySelector('bilingual-keyboard');
-    if (existing) {
-      if (existing.hasAttribute('visible')) existing.removeAttribute('visible');
-      else existing.setAttribute('visible', '');
-    }
+  // If the keyboard is already in the DOM, toggle visibility instead of
+  // injecting another instance. (Note: we check the DOM, not the flag,
+  // because the component's own customElements.define block also sets the
+  // flag — checking the flag would short-circuit on first run.)
+  const existing = document.querySelector('bilingual-keyboard');
+  if (existing) {
+    if (existing.hasAttribute('visible')) existing.removeAttribute('visible');
+    else existing.setAttribute('visible', '');
     return;
   }
 
-  window.__bilangSlidekeys__ = { source: 'bookmarklet', version: 'bookmarklet-2026-05-06', registered: false };
-
-  // Define the custom element and inject an instance.
+  // Inject a new instance.
   function inject() {
     if (!document.body) {
       document.addEventListener('DOMContentLoaded', inject, { once: true });
