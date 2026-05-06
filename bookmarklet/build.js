@@ -127,18 +127,21 @@ writeFileSync(resolve(__dirname, 'bookmarklet.meta.json'), JSON.stringify({
   built_at: new Date().toISOString(),
 }, null, 2));
 
-// Splice the bookmarklet URL into INSTALL.html. The template uses the
-// marker BOOKMARKLET_HREF — replace it with the actual URL.
+// Splice the bookmarklet URL into INSTALL.html.
 const installPath = resolve(__dirname, 'INSTALL.html');
 const installHtml = readFileSync(installPath, 'utf8');
-// Match an existing href on the .bookmarklet anchor and replace it.
-const updated = installHtml.replace(
-  /(<a class="bookmarklet" href=")[^"]*(")/,
-  (m, pre, post) => pre + bookmarkletUrl.replace(/"/g, '&quot;') + post
+const re = /(<a class="bookmarklet" href=")[^"]*(")/;
+if (!re.test(installHtml)) {
+  console.error('ERROR: bookmarklet anchor not found in INSTALL.html — splice skipped.');
+  console.error('Expected pattern: <a class="bookmarklet" href="...">');
+  process.exit(1);
+}
+const updated = installHtml.replace(re, (m, pre, post) =>
+  pre + bookmarkletUrl.replace(/"/g, '&quot;') + post
 );
 if (updated === installHtml) {
-  console.warn('WARN: did not splice bookmarklet URL into INSTALL.html (anchor not found?)');
+  console.log('INSTALL.html unchanged (URL identical to last build)');
 } else {
   writeFileSync(installPath, updated);
-  console.log('Updated INSTALL.html with the inlined bookmarklet URL');
+  console.log('Updated INSTALL.html with new bookmarklet URL');
 }

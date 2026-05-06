@@ -10,15 +10,13 @@ Open **[INSTALL.html](https://htmlpreview.github.io/?https://github.com/grogzoid
 
 ## How it works
 
-The bookmark's URL is a tiny `javascript:` snippet (~250 chars) that:
+The bookmark's URL is a single `javascript:` URL with the **entire keyboard inlined** — minified and URL-encoded into ~46 K characters. No CDN, no remote fetch, no third-party dependency. When you click the bookmark:
 
-1. Checks whether the keyboard is already loaded on the current page (via `window.__bilangSlidekeys__`)
-2. If not, creates a `<script>` tag pointing at the full bundle on **jsDelivr** (a CDN that mirrors GitHub):
-   ```
-   https://cdn.jsdelivr.net/gh/grogzoid/bilang-slidekeys@main/bookmarklet/bilang-slidekeys.bookmarklet.js
-   ```
-3. The full bundle defines the `<bilingual-keyboard>` custom element, creates an instance, and shows the keyboard panel
-4. On subsequent clicks, the bookmarklet just toggles the panel's visibility (no re-fetch)
+1. The `javascript:` URL executes in the page's context (with the page's privileges)
+2. If a `<bilingual-keyboard>` element is already in the DOM, toggle its visibility
+3. Otherwise, define the custom element class, create an instance, append it to `document.body`
+
+Going inline (vs. the previous CDN-loader design) was necessary because sites with strict Content Security Policy block third-party `<script src=...>` injection. Inline `javascript:` execution sidesteps CSP — the bookmarklet works on Wikipedia, Twitter/X, GitHub, banking sites, anywhere.
 
 ## Files in this directory
 
@@ -48,6 +46,7 @@ Bookmarklets are great for **testing, research, and casual use** because there's
 
 ## Limitations
 
-- **Strict Content Security Policy** sites may block the third-party script load. Most everyday sites (Gmail, WhatsApp Web, Wikipedia, Twitter, GitHub) work fine.
-- **No auto-load** — you click it on each page. For a use-on-every-page experience, see `userscript/INSTALL.md`.
-- **WhatsApp Web layout quirks** — same as inline userscript mode. Use the keyboard's pop-out (⧉) button to sidestep this.
+- **No auto-load** — you click it on each page. For a use-on-every-page experience, see `../userscript/INSTALL.md`.
+- **No auto-update** — the code is frozen in the URL. Re-drag the button from `INSTALL.html` to update.
+- **URL length** — the inlined URL is ~46 K characters. Modern browsers (Chrome 80+, Firefox 80+, Edge, modern Safari) handle this; very old or enterprise-restricted builds may truncate.
+- **WhatsApp Web layout quirks** — same as inline userscript mode. Use the keyboard's pop-out (⧉) button to sidestep this. See `../docs/INLINE-PUSHUP.md`.

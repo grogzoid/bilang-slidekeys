@@ -153,49 +153,54 @@
   <li>Click the bookmark again to hide / show the keyboard</li>
 </ol>
 
-<h2>How it works</h2>
+<h2>How a bookmarklet works (in plain terms)</h2>
 
-<p>The bookmarklet itself is just a tiny loader (~250 characters). When you click it, it fetches the full keyboard script from <a href="https://www.jsdelivr.com/" target="_blank">jsDelivr</a> (a CDN that mirrors GitHub) and injects it into the current page.</p>
+<p>A bookmarklet is just a regular browser bookmark — but instead of saving a web address, it saves JavaScript code that runs <strong>on whatever page you're currently looking at</strong> when you click the bookmark. The browser sees a URL starting with <code>javascript:</code> and treats it as code to execute, not a page to load.</p>
 
-<p>The script defines a custom HTML element <code>&lt;bilingual-keyboard&gt;</code>, creates one, and adds it to the page's body. The keyboard's UI is fully isolated using Shadow DOM, so it won't conflict with the host site's styles.</p>
+<p>That's the whole concept. There's no installation, no extension, no permissions prompt. Bookmarklets have been a standard browser feature since the late 1990s.</p>
 
-<p>Subsequent clicks toggle the keyboard panel's visibility (no re-fetch).</p>
+<h2>What this specific bookmarklet does</h2>
 
-<h2>What gets executed</h2>
+<ol>
+  <li>Looks for an existing <code>&lt;bilingual-keyboard&gt;</code> element on the page. If found, toggles its visibility (so re-clicking the bookmark hides/shows the keyboard).</li>
+  <li>Otherwise, defines a custom HTML element called <code>&lt;bilingual-keyboard&gt;</code>, creates one, and adds it to the page.</li>
+  <li>The element's UI lives entirely inside a Shadow DOM — fully isolated from the host page's CSS. The keyboard sits at the bottom of the viewport via a CSS overlay; it doesn't modify any of the page's existing content.</li>
+</ol>
 
-<p>The bookmarklet code is short enough to read in full:</p>
-
-<pre><code>(function () {
-  if (window.__bilangSlidekeys__) {
-    var k = document.querySelector('bilingual-keyboard');
-    if (k) {
-      if (k.hasAttribute('visible')) k.removeAttribute('visible');
-      else k.setAttribute('visible', '');
-    }
-    return;
-  }
-  var s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/gh/grogzoid/bilang-slidekeys@main/bookmarklet/bilang-slidekeys.bookmarklet.js';
-  document.head.appendChild(s);
-})();</code></pre>
-
-<p>The full bundle that gets fetched is at <a href="https://github.com/grogzoid/bilang-slidekeys/blob/main/bookmarklet/bilang-slidekeys.bookmarklet.js" target="_blank">bookmarklet/bilang-slidekeys.bookmarklet.js</a> in the repo. It's ~50 KB, a few hundred lines.</p>
-
-<h2>Privacy</h2>
+<h2>Security &amp; transparency</h2>
 
 <ul>
-  <li>The bookmarklet makes <strong>one network request</strong> the first time you click it on a page: fetching the keyboard script from jsDelivr's CDN.</li>
-  <li>jsDelivr sees that request (URL + your IP). It does not see what you type.</li>
-  <li>The keyboard itself does not make any network requests, store any data beyond the floating button's position (in <code>localStorage</code>), or send anything anywhere.</li>
-  <li>Source code is open: <a href="https://github.com/grogzoid/bilang-slidekeys" target="_blank">github.com/grogzoid/bilang-slidekeys</a></li>
+  <li><strong>Auditable code.</strong> The full code that runs is embedded directly in the bookmark URL. You can right-click the installed bookmark → Edit (or Properties), and read every byte of what it does. Decode the URL with any URL-decoder for a more readable view, or read the source on GitHub: <a href="https://github.com/grogzoid/bilang-slidekeys" target="_blank">github.com/grogzoid/bilang-slidekeys</a></li>
+  <li><strong>No network requests.</strong> The bookmarklet bundle is self-contained — it doesn't load anything from the internet, doesn't ping a CDN, doesn't phone home. The only data persistence is the floating button's screen position, stored locally in your browser's <code>localStorage</code>.</li>
+  <li><strong>No analytics, no telemetry.</strong> What you type stays in your browser. Bilang-slidekeys has no ability to see, log, or transmit anything.</li>
+  <li><strong>Same trust model as any web code.</strong> A bookmarklet runs with the same privileges as the page you click it on — it can read and modify the DOM of that page, just like any script the site itself loads. It can <em>not</em> access cookies / data from other sites, your local files, or your browser's settings.</li>
+  <li><strong>Trusted on banks/financial sites?</strong> Just don't click it there. The bookmarklet only runs when you explicitly click it. We strongly recommend not running this (or any third-party bookmarklet) on sites where you're logged into sensitive accounts.</li>
+  <li><strong>The GitHub repository is the canonical source.</strong> Anything you find there is what's in the bookmarklet. We don't have a separate "production" build — the same code in the repo is what's running in your browser.</li>
+</ul>
+
+<h2>Updates</h2>
+
+<p>Bookmarklets do <strong>not</strong> auto-update. The code is frozen in the URL at the moment you dragged the button. If we improve the keyboard or fix a bug, you'll need to re-visit this page and re-drag the button to get the new version. (Right-click the old bookmark → Delete first, or just overwrite by dragging on top.)</p>
+
+<p>This is a feature, not a bug — it means the code can never silently change after you install. For a use-everywhere-and-update-automatically experience, see the <a href="../userscript/INSTALL.html">Tampermonkey userscript</a> distribution instead.</p>
+
+<h2>What's actually in the URL</h2>
+
+<p>The <code>javascript:</code> URL is roughly 46,000 characters long — the entire bilingual keyboard, minified and URL-encoded into one giant URL. Most of it is the custom element implementation (~32 KB of JavaScript before encoding). You can paste the URL into <a href="https://www.urldecoder.org/" target="_blank">a URL decoder</a> if you want to read the unencoded JavaScript, or just look at the same code in the repo:</p>
+
+<ul>
+  <li><a href="https://github.com/grogzoid/bilang-slidekeys/blob/main/src/bilingual-keyboard.js" target="_blank">src/bilingual-keyboard.js</a> — the web component (custom element)</li>
+  <li><a href="https://github.com/grogzoid/bilang-slidekeys/blob/main/src/layouts.js" target="_blank">src/layouts.js</a> — the EN ↔ Ukrainian keymap</li>
+  <li><a href="https://github.com/grogzoid/bilang-slidekeys/blob/main/bookmarklet/build.js" target="_blank">bookmarklet/build.js</a> — the build script that bundles + minifies these into the bookmarklet URL</li>
 </ul>
 
 <h2>Limitations</h2>
 
 <ul>
-  <li><strong>Sites with strict Content Security Policy</strong> may block third-party scripts and the bookmarklet won't load. Most everyday sites (Gmail, WhatsApp Web, Wikipedia, Twitter, GitHub) work fine. Some banks and government sites are locked down.</li>
-  <li><strong>You have to click the bookmarklet on every new page.</strong> Unlike the userscript or the upcoming Chrome extension, bookmarklets don't run automatically. For a use-on-every-page experience, install the <a href="../userscript/INSTALL.html">Tampermonkey userscript</a> instead.</li>
+  <li><strong>You have to click the bookmarklet on every new page.</strong> Bookmarklets don't run automatically — that's the whole point. For a use-on-every-page experience, install the <a href="../userscript/INSTALL.html">Tampermonkey userscript</a>.</li>
+  <li><strong>Browser URL length limits.</strong> The inlined bookmarklet is ~46 K characters. Chrome / Edge / modern Firefox handle this fine. Very old browsers or some restrictive enterprise builds may truncate the URL.</li>
   <li><strong>WhatsApp Web's chat input</strong> may not push up properly when the keyboard appears (see <a href="../docs/INLINE-PUSHUP.md">INLINE-PUSHUP.md</a>). Use the keyboard's pop-out (⧉) button to put it in a separate Picture-in-Picture window — that sidesteps the issue.</li>
+  <li><strong>Doesn't survive page reload.</strong> Click the bookmark again after a page refresh.</li>
 </ul>
 
 <h2>Uninstall</h2>
