@@ -43,11 +43,23 @@ Type on your physical keyboard using the standard Ukrainian QWERTY-position layo
 
 ## Installation
 
-### Userscript (Tampermonkey, recommended for end users)
+Three distribution paths, in order of effort:
 
-See **[`userscript/INSTALL.md`](userscript/INSTALL.md)** for the step-by-step tutorial with screenshots.
+### Bookmarklet (zero-install, fastest to try)
 
-Quick path: install Tampermonkey → open the [raw userscript URL](https://raw.githubusercontent.com/grogzoid/bilang-slidekeys/main/userscript/bilang-slidekeys.user.js) → click Install. Then Tampermonkey menu → "Toggle keyboard here" or hotkey `Ctrl+Shift+\``.
+Drag a button to your bookmarks bar; click it on any page to summon the keyboard. Works in every browser, no extension needed. See **[`bookmarklet/INSTALL.html`](bookmarklet/INSTALL.html)** for the install page (open it in a browser).
+
+Best for: trying it out, occasional use, testing, sharing with others.
+
+### Userscript via Tampermonkey
+
+See **[`userscript/INSTALL.md`](userscript/INSTALL.md)** for the step-by-step tutorial with screenshots. Quick path: install Tampermonkey → open the [raw userscript URL](https://raw.githubusercontent.com/grogzoid/bilang-slidekeys/main/userscript/bilang-slidekeys.user.js) → click Install. Then Tampermonkey menu → "Toggle keyboard here" or hotkey `Ctrl+Shift+\``.
+
+Best for: daily use on specific sites with persistent settings.
+
+### Chrome Web Store extension (planned)
+
+One-click install for non-technical users. Conversion plan in [`TODO.md`](TODO.md).
 
 ### Embed in your own site (web developers)
 

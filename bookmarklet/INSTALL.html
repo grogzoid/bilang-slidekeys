@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Install bilang-slidekeys bookmarklet</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg: #0d0d1a;
+      --fg: #e0e0e0;
+      --muted: #888;
+      --accent: #7ec8e3;
+      --card: #16162a;
+      --border: #2a2a3e;
+      --code-bg: #1a1a2e;
+    }
+    html { background: var(--bg); }
+    body {
+      margin: 0 auto;
+      padding: 56px 24px 96px;
+      max-width: 760px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    h1 {
+      color: var(--accent);
+      font-size: 32px;
+      margin: 0 0 8px;
+    }
+    .lede {
+      color: #c0c0c0;
+      font-size: 17px;
+      margin: 0 0 32px;
+    }
+    h2 {
+      color: var(--accent);
+      font-size: 18px;
+      margin-top: 40px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    code {
+      background: var(--code-bg);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 13px;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+    pre code { background: transparent; padding: 0; }
+
+    .drag-target {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 36px 24px;
+      background: var(--card);
+      border: 2px dashed var(--accent);
+      border-radius: 14px;
+      margin: 24px 0 32px;
+      box-shadow: 0 0 32px rgba(126, 200, 227, 0.1);
+    }
+    .drag-target .label {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .bookmarklet {
+      display: inline-block;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #7ec8e3 0%, #5aa9c4 100%);
+      color: #0d0d1a;
+      font-weight: 700;
+      font-size: 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: grab;
+      box-shadow: 0 4px 16px rgba(126, 200, 227, 0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .bookmarklet:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(126, 200, 227, 0.4);
+    }
+    .bookmarklet:active {
+      cursor: grabbing;
+    }
+    .arrow {
+      color: var(--accent);
+      font-size: 22px;
+      animation: bounce 1.5s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    ol li, ul li { margin-bottom: 8px; }
+    .note {
+      background: var(--code-bg);
+      border-left: 3px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #b0b0b0;
+    }
+    .note strong { color: var(--accent); }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<h1>Install bilang-slidekeys as a bookmarklet</h1>
+<p class="lede">Zero install: drag a button to your bookmarks bar. Click it on any web page to summon a bilingual on-screen keyboard.</p>
+
+<h2>Install</h2>
+
+<p>Make sure your bookmarks bar is visible (Ctrl+Shift+B in Chrome / Firefox / Edge), then drag this button up to it:</p>
+
+<div class="drag-target">
+  <span class="arrow">↑ drag this ↑</span>
+  <a class="bookmarklet" href="javascript:(function(){if(window.__bilangSlidekeys__){var k=document.querySelector('bilingual-keyboard');if(k){if(k.hasAttribute('visible'))k.removeAttribute('visible');else k.setAttribute('visible','');}return;}var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/grogzoid/bilang-slidekeys@main/bookmarklet/bilang-slidekeys.bookmarklet.js';document.head.appendChild(s);})();">⌨ Bilang Keyboard</a>
+  <span class="label">drag to your bookmarks bar</span>
+</div>
+
+<div class="note">
+  <strong>Browsers usually block clicking</strong> the button on this page (they treat <code>javascript:</code> bookmarklets specially). That's expected. The bookmarklet works once it's saved as a bookmark — drag it.
+</div>
+
+<h2>Use</h2>
+
+<ol>
+  <li>Go to any web page (e.g. <a href="https://en.wikipedia.org/wiki/Ukrainian_language" target="_blank">Wikipedia</a>, your email, a chat app)</li>
+  <li>Click into a text input or textarea</li>
+  <li>Click the <strong>⌨ Bilang Keyboard</strong> bookmark in your bookmarks bar</li>
+  <li>The keyboard slides up. Type on your physical keyboard — Cyrillic appears in the input (LiveType is the default mode)</li>
+  <li>Click the bookmark again to hide / show the keyboard</li>
+</ol>
+
+<h2>How it works</h2>
+
+<p>The bookmarklet itself is just a tiny loader (~250 characters). When you click it, it fetches the full keyboard script from <a href="https://www.jsdelivr.com/" target="_blank">jsDelivr</a> (a CDN that mirrors GitHub) and injects it into the current page.</p>
+
+<p>The script defines a custom HTML element <code>&lt;bilingual-keyboard&gt;</code>, creates one, and adds it to the page's body. The keyboard's UI is fully isolated using Shadow DOM, so it won't conflict with the host site's styles.</p>
+
+<p>Subsequent clicks toggle the keyboard panel's visibility (no re-fetch).</p>
+
+<h2>What gets executed</h2>
+
+<p>The bookmarklet code is short enough to read in full:</p>
+
+<pre><code>(function () {
+  if (window.__bilangSlidekeys__) {
+    var k = document.querySelector('bilingual-keyboard');
+    if (k) {
+      if (k.hasAttribute('visible')) k.removeAttribute('visible');
+      else k.setAttribute('visible', '');
+    }
+    return;
+  }
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/gh/grogzoid/bilang-slidekeys@main/bookmarklet/bilang-slidekeys.bookmarklet.js';
+  document.head.appendChild(s);
+})();</code></pre>
+
+<p>The full bundle that gets fetched is at <a href="https://github.com/grogzoid/bilang-slidekeys/blob/main/bookmarklet/bilang-slidekeys.bookmarklet.js" target="_blank">bookmarklet/bilang-slidekeys.bookmarklet.js</a> in the repo. It's ~50 KB, a few hundred lines.</p>
+
+<h2>Privacy</h2>
+
+<ul>
+  <li>The bookmarklet makes <strong>one network request</strong> the first time you click it on a page: fetching the keyboard script from jsDelivr's CDN.</li>
+  <li>jsDelivr sees that request (URL + your IP). It does not see what you type.</li>
+  <li>The keyboard itself does not make any network requests, store any data beyond the floating button's position (in <code>localStorage</code>), or send anything anywhere.</li>
+  <li>Source code is open: <a href="https://github.com/grogzoid/bilang-slidekeys" target="_blank">github.com/grogzoid/bilang-slidekeys</a></li>
+</ul>
+
+<h2>Limitations</h2>
+
+<ul>
+  <li><strong>Sites with strict Content Security Policy</strong> may block third-party scripts and the bookmarklet won't load. Most everyday sites (Gmail, WhatsApp Web, Wikipedia, Twitter, GitHub) work fine. Some banks and government sites are locked down.</li>
+  <li><strong>You have to click the bookmarklet on every new page.</strong> Unlike the userscript or the upcoming Chrome extension, bookmarklets don't run automatically. For a use-on-every-page experience, install the <a href="../userscript/INSTALL.html">Tampermonkey userscript</a> instead.</li>
+  <li><strong>WhatsApp Web's chat input</strong> may not push up properly when the keyboard appears (see <a href="../docs/INLINE-PUSHUP.md">INLINE-PUSHUP.md</a>). Use the keyboard's pop-out (⧉) button to put it in a separate Picture-in-Picture window — that sidesteps the issue.</li>
+</ul>
+
+<h2>Uninstall</h2>
+
+<p>Right-click the bookmark in your bookmarks bar → Delete. That's it.</p>
+
+<h2>Other distributions</h2>
+
+<p>Three ways to use bilang-slidekeys, in order of integration depth:</p>
+
+<table style="width:100%; border-collapse: collapse; margin: 16px 0;">
+  <tr style="background: var(--card);">
+    <th style="padding: 10px; text-align: left; border: 1px solid var(--border);">Method</th>
+    <th style="padding: 10px; text-align: left; border: 1px solid var(--border);">Effort</th>
+    <th style="padding: 10px; text-align: left; border: 1px solid var(--border);">Use it where</th>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid var(--border);"><strong>Bookmarklet</strong> (this page)</td>
+    <td style="padding: 10px; border: 1px solid var(--border);">Drag once</td>
+    <td style="padding: 10px; border: 1px solid var(--border);">Click per-page when needed</td>
+  </tr>
+  <tr style="background: var(--card);">
+    <td style="padding: 10px; border: 1px solid var(--border);"><strong>Userscript</strong> (<a href="../userscript/INSTALL.html">install</a>)</td>
+    <td style="padding: 10px; border: 1px solid var(--border);">Install Tampermonkey + script</td>
+    <td style="padding: 10px; border: 1px solid var(--border);">Auto-runs on opted-in sites</td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; border: 1px solid var(--border);"><strong>Chrome extension</strong> (planned)</td>
+    <td style="padding: 10px; border: 1px solid var(--border);">One-click from Web Store</td>
+    <td style="padding: 10px; border: 1px solid var(--border);">Same as userscript, no Tampermonkey</td>
+  </tr>
+</table>
+
+</body>
+</html>
